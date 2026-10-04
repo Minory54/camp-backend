@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.env
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Локальные настройки AI-инструментов
+.agents/
+.claude/
+.cursor/
+.devin/
+
+# macOS
+.DS_Store
+
+Camp 2026.code-workspace

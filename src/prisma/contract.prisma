@@ -1,0 +1,243 @@
+// use prisma-8
+enum Group_states {
+  OPEN = "open"
+  LOCKED = "locked"
+  HIDDEN = "hidden"
+
+  @@type("pg/text@1")
+}
+
+enum Question_types {
+  SINGLE = "single"
+  MULTIPLE = "multiple"
+
+  @@type("pg/text@1")
+}
+
+// 1
+model Code_languages {
+  id             Int              @id @default(autoincrement())
+  title          String           @unique
+
+  Test_questions Test_questions[]
+  Practice_files Practice_files[]
+}
+
+// 2
+model Courses {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  description String?
+
+  Groups      Groups[]
+}
+
+// 3 
+model Students {
+  id               Uuid                       @id @default(dbgenerated("gen_random_uuid()"))
+  display_code     String                     @unique
+  recovery_code    String                     @unique
+  label            String?
+  created_at       TimestamptzString          @default(now())
+  updated_at       temporal.updatedAtString()
+
+  Student_sessions Student_sessions[]
+  Lesson_progress  Lesson_progress[]
+  Practice_saves   Practice_saves[]
+}
+
+// 4
+model Student_sessions {
+  id         Int               @id @default(autoincrement())
+  id_student Uuid
+  token_hash String            @unique
+  created_at TimestamptzString @default(now())
+  expires_at TimestamptzString
+
+  student    Students          @relation(fields:[id_student], references:[id], onDelete: Cascade)
+
+  @@index([id_student], name: "sessions_student_idx")
+  @@check(expression: "expires_at > created_at", name: "sessions_valid_expiry")
+}
+
+// 5
+model Technologies {
+  id       Int        @id @default(autoincrement())
+  title    String     @unique
+
+  Theories Theories[]
+}
+
+// 6
+model Groups {
+  id        Int          @id @default(autoincrement())
+  title     String
+  position  Int
+  state     Group_states @default(OPEN)
+  id_course Int
+
+  course    Courses      @relation(fields:[id_course], references:[id], onDelete: Restrict)
+  Lessons   Lessons[]
+
+  @@unique([id_course, position])
+  @@check(expression: "position >= 1", name: "groups_positive_position")
+}
+
+// 7
+model Lessons {
+  id              Int               @id @default(autoincrement())
+  id_group        Int
+  title           String
+  position        Int
+  is_hidden       Boolean           @default(false)
+  id_theory       Int?
+  id_practice     Int?
+  id_test         Int?
+
+  group           Groups            @relation(fields:[id_group], references:[id], onDelete: Restrict)
+  theory          Theories?         @relation(fields:[id_theory], references:[id], onDelete: Restrict)
+  test            Tests?            @relation(fields:[id_test], references:[id], onDelete: Restrict)
+  practice        Practices?        @relation(fields:[id_practice], references:[id], onDelete: Restrict)
+
+  Lesson_progress Lesson_progress[]
+
+  @@unique([id_group, position], map: "lessons_group_position_key") // Чтобы не повторялись позиции в рамках одного острова
+  @@check(expression: "num_nonnulls(id_theory, id_practice, id_test) >= 1", name: "lessons_materials_required")
+  @@check(expression: "position >= 1", name: "lessons_positive_position")
+}
+
+// 8
+model Theories {
+  id            Int          @id @default(autoincrement())
+  title         String
+  description   String?
+  id_technology Int
+  position      Int
+  mdx_source    String
+
+  technology    Technologies @relation(fields:[id_technology], references:[id], onDelete: Restrict)
+
+  Lessons       Lessons[]
+
+  @@unique([id_technology, position], map: "theories_technology_position_key")
+  @@check(expression: "position >= 1", name: "theories_positive_position")
+}
+
+// 9
+model Tests {
+  id             Int              @id @default(autoincrement())
+  title          String
+  description    String?
+
+  Lessons        Lessons[]
+  Test_questions Test_questions[]
+}
+
+// 10
+model Test_questions {
+  id               Int                @id @default(autoincrement())
+  id_test          Int
+  position         Int
+  title            String
+  description      String?
+  type             Question_types     @default(SINGLE)
+  code_block       String?
+  id_code_language Int?
+
+  test             Tests              @relation(fields:[id_test], references:[id], onDelete: Cascade)
+  code_language    Code_languages?    @relation(fields:[id_code_language], references:[id], onDelete: Restrict)
+
+  Question_options Question_options[]
+
+  @@unique([id_test, position], map: "test_questions_position_key")
+  @@check(expression: "position >= 1", name: "questions_positive_position")
+}
+
+// 11
+model Question_options {
+  id          Int            @id @default(autoincrement())
+  id_question Int
+  position    Int
+  title       String
+  is_correct  Boolean        @default(false)
+
+  question    Test_questions @relation(fields:[id_question], references:[id], onDelete: Cascade)
+
+  @@unique([id_question, position], map: "question_options_position_key")
+  @@check(expression: "position >= 1", name: "options_positive_position")
+}
+
+// 12
+model Lesson_progress {
+  id                    Int                @id @default(autoincrement())
+  id_student            Uuid
+  id_lesson             Int
+  theory_completed_at   TimestamptzString?
+  practice_completed_at TimestamptzString?
+  test_completed_at     TimestamptzString?
+
+  student               Students           @relation(fields:[id_student], references:[id], onDelete: Cascade)
+  lesson                Lessons            @relation(fields:[id_lesson], references:[id], onDelete: Cascade)
+
+  @@unique([id_student, id_lesson], map: "lesson_progress_student_lesson_key")
+  @@index([id_lesson], name: "lesson_progress_lesson_idx")
+}
+
+// 13
+model Practices {
+  id             Int              @id @default(autoincrement())
+  title          String
+  description    String?
+  mdx_source     String
+  test_js        String
+
+  Lessons        Lessons[]
+  Practice_saves Practice_saves[]
+  Practice_files Practice_files[]
+}
+
+// 14
+model Practice_saves {
+  id          Int                        @id @default(autoincrement())
+  id_student  Uuid
+  id_practice Int
+  created_at  TimestamptzString          @default(now())
+  updated_at  temporal.updatedAtString()
+
+  student     Students                   @relation(fields:[id_student], references:[id], onDelete: Cascade)
+  practice    Practices                  @relation(fields:[id_practice], references:[id], onDelete: Restrict)
+
+  Save_files  Save_files[]
+
+  @@unique([id_student, id_practice], map: "practice_saves_student_practice_key")
+  @@index([id_practice], name: "practice_saves_practice_idx")
+}
+
+// 15
+model Practice_files {
+  id               Int            @id @default(autoincrement())
+  id_practice      Int
+  id_code_language Int
+  code             String
+  filename         String
+
+  practice         Practices      @relation(fields:[id_practice], references:[id], onDelete: Cascade)
+  code_language    Code_languages @relation(fields:[id_code_language], references:[id], onDelete: Restrict)
+
+  Save_files       Save_files[]
+
+  @@unique([id_practice, filename], map: "practice_files_practice_filename_key")
+}
+
+// 16
+model Save_files {
+  id               Int            @id @default(autoincrement())
+  id_practice_save Int
+  id_practice_file Int
+  code             String
+
+  practice_file    Practice_files @relation(fields:[id_practice_file], references:[id], onDelete: Cascade)
+  practice_save    Practice_saves @relation(fields:[id_practice_save], references:[id], onDelete: Cascade)
+
+  @@unique([id_practice_save, id_practice_file], map: "save_files_save_practice_file_key")
+}
