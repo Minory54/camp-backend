@@ -6,9 +6,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsx",
-    "start": "node dist/server.js",
-    "contract:emit": "prisma contract emit",
+    "build": "tsc",
+    "start": "node dist/src/server.js",
+    "contract:emit": "node --import tsx scripts/emit-contract.ts",
     "postinstall": "prisma skills sync || exit 0",
     "seed:base": "tsx src/prisma/seeds/seed.base.ts",
     "seed:test": "tsx src/prisma/seeds/seed.test.ts"
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@prisma/cli-engine": "^0.3.0",
+    "@prisma/orm-toolchain": "8.0.0-rc.10",
     "@types/node": "^26.1.2",
     "prisma": "^8.0.0-rc.14",
     "tsx": "^4.23.13",

@@ -21,5 +21,18 @@ export const UpdateTestSchema = Type.Partial(CreateTestSchema, {
   minProperties: 1,
 });
 
+export const CheckAnswerSchema = Type.Object({
+  id_student: Type.String({ format: "uuid" }),
+  id_question: Type.Integer({ minimum: 1 }),
+  selected_option_ids: Type.Array(Type.Integer({ minimum: 1 })),
+});
+
+export const CheckAnswerResponseSchema = Type.Object({
+  is_correct: Type.Boolean(),
+  is_test_completed: Type.Boolean(),
+  message: Type.Optional(Type.String()),
+});
+
 export type CreateTestData = Static<typeof CreateTestSchema>;
 export type UpdateTestData = Static<typeof UpdateTestSchema>;
+export type CheckAnswerData = Static<typeof CheckAnswerSchema>;

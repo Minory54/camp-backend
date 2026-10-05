@@ -5,6 +5,8 @@ import {
   TestIdSchema,
   CreateTestSchema,
   UpdateTestSchema,
+  CheckAnswerSchema,
+  CheckAnswerResponseSchema,
 } from "./tests.schema.js";
 import * as service from "./tests.service.js";
 
@@ -17,6 +19,17 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     { schema: { params: TestIdSchema, response: { 200: TestResponseSchema } } },
     async (request) => service.getTestById(request.params.id),
+  );
+
+  fastify.post(
+    "/answer",
+    {
+      schema: {
+        body: CheckAnswerSchema,
+        response: { 200: CheckAnswerResponseSchema },
+      },
+    },
+    async (request) => service.checkAnswer(request.body),
   );
 
   fastify.post(
