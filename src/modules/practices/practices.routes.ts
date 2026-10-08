@@ -5,10 +5,17 @@ import {
   PracticeIdSchema,
   CreatePracticeSchema,
   UpdatePracticeSchema,
+  CheckPracticeSchema,
+  CheckPracticeResponseSchema,
 } from "./practices.schema.js";
 import * as service from "./practices.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
+  fastify.post(
+    "/check",
+    { schema: { body: CheckPracticeSchema, response: { 200: CheckPracticeResponseSchema } } },
+    async (request) => service.checkPractice(request.body),
+  );
   fastify.get(
     "/",
     { schema: { response: { 200: Type.Array(PracticeResponseSchema) } } },

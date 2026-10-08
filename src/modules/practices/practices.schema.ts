@@ -28,3 +28,22 @@ export const UpdatePracticeSchema = Type.Partial(CreatePracticeSchema, {
 
 export type CreatePracticeData = Static<typeof CreatePracticeSchema>;
 export type UpdatePracticeData = Static<typeof UpdatePracticeSchema>;
+
+export const CheckPracticeSchema = Type.Object({
+  id_lesson: Type.Integer({ minimum: 1 }),
+  id_student: Type.String({ format: "uuid" }),
+  files: Type.Array(
+    Type.Object({
+      id_practice_file: Type.Integer({ minimum: 1 }),
+      code: Type.String({ maxLength: 200_000 }),
+    }),
+    { minItems: 1, maxItems: 30 },
+  ),
+});
+
+export const CheckPracticeResponseSchema = Type.Object({
+  passed: Type.Boolean(),
+  error: Type.Optional(Type.String()),
+});
+
+export type CheckPracticeData = Static<typeof CheckPracticeSchema>;

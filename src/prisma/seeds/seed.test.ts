@@ -76,10 +76,19 @@ const practices = [
   {
     title: "Собери страницу",
     description: "Создай каркас HTML-документа.",
-    mdx_source:
-      "# Собери страницу\n\nДобавь `<!doctype html>`, `<html>`, `<head>` и `<body>`.\n",
-    test_js:
-      "if (!document.querySelector('html head') || !document.querySelector('html body')) throw new Error('Добавь head и body');",
+    mdx_source: "# Собери страницу\n\nДобавь `<!doctype html>`, `<html>`, `<head>` и `<body>`.\n",
+    test_js: `
+const html = sourceFiles.find(file => file.filename === 'index.html')?.code ?? '';
+const source = html.replace(/<!--[\\s\\S]*?-->/g, '');
+const hasDoctype = /^\\s*<!doctype\\s+html\\s*>/i.test(source);
+const htmlTag = /<html(?:\\s[^>]*)?>/i.exec(source);
+const headTag = /<head(?:\\s[^>]*)?>/i.exec(source);
+const bodyTag = /<body(?:\\s[^>]*)?>/i.exec(source);
+if (!hasDoctype || !htmlTag || !headTag || !bodyTag ||
+    !(htmlTag.index < headTag.index && headTag.index < bodyTag.index)) {
+  throw new Error('Добавь <!doctype html>, html, head и body в исходный файл');
+}
+`,
     filename: "index.html",
     language: "html",
     code: '<!doctype html>\n<html lang="ru">\n  <head><title>Моя страница</title></head>\n  <body></body>\n</html>\n',
@@ -89,23 +98,34 @@ const practices = [
   {
     title: "Напиши текст",
     description: "Добавь заголовок и абзац.",
-    mdx_source:
-      "# Напиши текст\n\nРазмести на странице один `<h1>` и один `<p>`.\n",
-    test_js:
-      "if (!document.querySelector('h1') || !document.querySelector('p')) throw new Error('Нужны h1 и p');",
+    mdx_source: "# Напиши текст\n\nРазмести на странице один `<h1>` и один `<p>`.\n",
+    test_js: `
+const hasText = selector => Array.from(document.querySelectorAll(selector))
+  .some(element => element.textContent?.trim());
+if (!hasText('h1')) throw new Error('Добавь непустой заголовок h1');
+if (!hasText('p')) throw new Error('Добавь непустой абзац p');
+`,
     filename: "text.html",
     language: "html",
     code: "<main>\n</main>\n",
-    saved_code:
-      "<main>\n  <h1>Обо мне</h1>\n  <p>Я учусь создавать сайты.</p>\n</main>\n",
+    saved_code: "<main>\n  <h1>Обо мне</h1>\n  <p>Я учусь создавать сайты.</p>\n</main>\n",
   },
   {
     title: "Добавь ссылку и картинку",
     description: "Сделай ссылку и изображение с описанием.",
-    mdx_source:
-      "# Ссылка и картинка\n\nДобавь `<a>` с адресом и `<img>` с текстом `alt`.\n",
-    test_js:
-      "if (!document.querySelector('a[href]') || !document.querySelector('img[alt]')) throw new Error('Нужны ссылка и изображение');",
+    mdx_source: "# Ссылка и картинка\n\nДобавь `<a>` с адресом и `<img>` с текстом `alt`.\n",
+    test_js: `
+const hasLink = Array.from(document.querySelectorAll('a')).some(link => {
+  const href = link.getAttribute('href')?.trim() ?? '';
+  return href !== '' && href !== '#' && !/^javascript:/i.test(href);
+});
+if (!hasLink) throw new Error('Добавь ссылку с адресом href');
+const hasImage = Array.from(document.querySelectorAll('img')).some(image =>
+  (image.getAttribute('src')?.trim() ?? '') !== '' &&
+  (image.getAttribute('alt')?.trim() ?? '') !== ''
+);
+if (!hasImage) throw new Error('Добавь изображение с адресом src и описанием alt');
+`,
     filename: "links.html",
     language: "html",
     code: "<section>\n</section>\n",
@@ -115,10 +135,43 @@ const practices = [
   {
     title: "Оформи карточку",
     description: "Напиши правило для класса card.",
-    mdx_source:
-      "# Оформи карточку\n\nДобавь правило для `.card` и задай внутренние отступы.\n",
-    test_js:
-      "if (!Array.from(document.styleSheets).some(sheet => { try { return Array.from(sheet.cssRules).some(rule => rule.cssText.includes('.card')); } catch { return false; } })) throw new Error('Добавь правило .card');",
+    mdx_source: "# Оформи карточку\n\nДобавь правило для `.card` и задай внутренние отступы.\n",
+    test_js: `
+    function allStyleRules() {
+  const found = [];
+  function visit(rules) {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) found.push(rule);
+      if ('cssRules' in rule) {
+        try { visit(rule.cssRules); } catch {}
+      }
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) {
+    try { visit(sheet.cssRules); } catch {}
+  }
+  return found;
+}
+function hasSelector(rule, selector) {
+  return rule.selectorText.split(',').some(part => part.trim() === selector);
+}
+
+const cardRules = allStyleRules().filter(rule => hasSelector(rule, '.card'));
+if (cardRules.length === 0) throw new Error('Добавь CSS-правило для .card');
+const paddingProperties = ['padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left'];
+if (!cardRules.some(rule => paddingProperties.some(property => rule.style.getPropertyValue(property).trim()))) {
+  throw new Error('Задай внутренние отступы для .card');
+}
+const probe = document.createElement('div');
+probe.className = 'card';
+document.body.appendChild(probe);
+const style = getComputedStyle(probe);
+const paddings = [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft];
+probe.remove();
+if (!paddings.some(value => Number.parseFloat(value) > 0)) {
+  throw new Error('Внутренние отступы .card должны быть больше нуля');
+}
+`,
     filename: "card.css",
     language: "css",
     code: ".card {\n}\n",
@@ -127,10 +180,37 @@ const practices = [
   {
     title: "Выбери цвета",
     description: "Задай цвет текста и фон страницы.",
-    mdx_source:
-      "# Выбери цвета\n\nДобавь для `body` свойства `color` и `background-color`.\n",
-    test_js:
-      "if (!Array.from(document.styleSheets).some(sheet => { try { return Array.from(sheet.cssRules).some(rule => rule.cssText.includes('color:') && rule.cssText.includes('background-color:')); } catch { return false; } })) throw new Error('Задай цвет текста и фон');",
+    mdx_source: "# Выбери цвета\n\nДобавь для `body` свойства `color` и `background-color`.\n",
+    test_js: `function allStyleRules() {
+  const found = [];
+  function visit(rules) {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) found.push(rule);
+      if ('cssRules' in rule) {
+        try { visit(rule.cssRules); } catch {}
+      }
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) {
+    try { visit(sheet.cssRules); } catch {}
+  }
+  return found;
+}
+function hasSelector(rule, selector) {
+  return rule.selectorText.split(',').some(part => part.trim() === selector);
+}
+const bodyRules = allStyleRules().filter(rule => hasSelector(rule, 'body'));
+if (!bodyRules.some(rule => rule.style.getPropertyValue('color').trim())) {
+  throw new Error('Задай для body цвет текста');
+}
+if (!bodyRules.some(rule => rule.style.getPropertyValue('background-color').trim())) {
+  throw new Error('Задай для body цвет фона');
+}
+const background = getComputedStyle(document.body).backgroundColor;
+if (background === 'transparent' || /^rgba\\([^)]*,\\s*0(?:\\.0+)?\\)$/i.test(background)) {
+  throw new Error('Цвет фона body не должен быть прозрачным');
+}
+`,
     filename: "colors.css",
     language: "css",
     code: "body {\n}\n",
@@ -197,13 +277,10 @@ export async function seedTest() {
     );
   }
 
-  const groups = (
-    await db.orm.public.Groups.where({ id_course: course.id }).all()
-  )
+  const groups = (await db.orm.public.Groups.where({ id_course: course.id }).all())
     .filter((group) => ["group 1", "group 2", "group 3"].includes(group.title))
     .sort((left, right) => left.position - right.position);
-  if (groups.length === 0)
-    throw new Error("Не найдены базовые группы курса HTML/CSS");
+  if (groups.length === 0) throw new Error("Не найдены базовые группы курса HTML/CSS");
 
   await db.transaction(async (tx) => {
     // Ученики и их сессии
@@ -213,9 +290,7 @@ export async function seedTest() {
     }
     console.log("Ученики созданы");
 
-    const expiresAt = new Date(
-      Date.now() + 30 * 24 * 60 * 60 * 1000,
-    ).toISOString();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
     for (const student of createdStudents) {
       await tx.orm.public.Student_sessions.create({
         id_student: student.id,
@@ -256,8 +331,7 @@ export async function seedTest() {
       createdPracticeFiles.push(
         await tx.orm.public.Practice_files.create({
           id_practice: createdPractice.id,
-          id_code_language:
-            practice.language === "html" ? htmlLanguage.id : cssLanguage.id,
+          id_code_language: practice.language === "html" ? htmlLanguage.id : cssLanguage.id,
           filename: practice.filename,
           code: practice.code,
         }),
@@ -277,13 +351,8 @@ export async function seedTest() {
         position: 1,
         title: question.title,
         code_block:
-          index === 1
-            ? "<h1>Привет!</h1>"
-            : index === 3
-              ? ".card { padding: 16px; }"
-              : null,
-        id_code_language:
-          index === 1 ? htmlLanguage.id : index === 3 ? cssLanguage.id : null,
+          index === 1 ? "<h1>Привет!</h1>" : index === 3 ? ".card { padding: 16px; }" : null,
+        id_code_language: index === 1 ? htmlLanguage.id : index === 3 ? cssLanguage.id : null,
       });
 
       for (const [optionIndex, title] of question.options.entries()) {
