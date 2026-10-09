@@ -8,9 +8,12 @@ export const TestResponseSchema = Type.Object({
   Test_questions: Type.Optional(Type.Array(QuestionResponseSchema)),
 });
 
-export const TestIdSchema = Type.Object({
-  id: Type.Integer({ minimum: 1 }),
-});
+export const TestIdSchema = Type.Object(
+  {
+    id: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+);
 
 export const CreateTestSchema = Type.Object(
   {
@@ -25,11 +28,14 @@ export const UpdateTestSchema = Type.Partial(CreateTestSchema, {
   additionalProperties: false,
 });
 
-export const CheckAnswerSchema = Type.Object({
-  id_student: Type.String({ format: "uuid" }),
-  id_question: Type.Integer({ minimum: 1 }),
-  selected_option_ids: Type.Array(Type.Integer({ minimum: 1 })),
-});
+export const CheckAnswerSchema = Type.Object(
+  {
+    id_student: Type.String({ format: "uuid" }),
+    id_question: Type.Integer({ minimum: 1 }),
+    selected_option_ids: Type.Array(Type.Integer({ minimum: 1 })),
+  },
+  { additionalProperties: false },
+);
 
 export const CheckAnswerResponseSchema = Type.Object({
   is_correct: Type.Boolean(),

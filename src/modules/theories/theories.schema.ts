@@ -14,12 +14,12 @@ export const TheoryResponseSchema = Type.Object({
 // Параметры URL
 export const TheoryIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 // Фильтрация теорий по технологии
 export const TheoriesFilterSchema = Type.Object({
   technologyId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 // Создание теории
 export const CreateTheorySchema = Type.Object(

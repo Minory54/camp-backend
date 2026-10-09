@@ -23,9 +23,12 @@ export const CourseResponseSchema = Type.Object({
   Groups: Type.Optional(Type.Array(Type.Any())),
 });
 
-export const CourseIdSchema = Type.Object({
-  id: Type.Integer({ minimum: 1 }),
-});
+export const CourseIdSchema = Type.Object(
+  {
+    id: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+);
 
 export const CreateCourseSchema = Type.Object(
   {

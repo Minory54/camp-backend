@@ -12,12 +12,12 @@ export const PracticeSaveResponseSchema = Type.Object({
 
 export const PracticeSaveIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const PracticeSavesFilterSchema = Type.Object({
   studentId: Type.Optional(Type.String({ format: "uuid" })),
   practiceId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreatePracticeSaveSchema = Type.Object(
   {

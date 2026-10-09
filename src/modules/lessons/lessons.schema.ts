@@ -18,11 +18,11 @@ export const LessonResponseSchema = Type.Object({
 
 export const LessonIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const LessonsFilterSchema = Type.Object({
   groupId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreateLessonSchema = Type.Object(
   {

@@ -13,12 +13,12 @@ export const PracticeFileResponseSchema = Type.Object({
 
 export const PracticeFileIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const PracticeFilesFilterSchema = Type.Object({
   practiceId: Type.Optional(Type.Integer({ minimum: 1 })),
   codeLanguageId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreatePracticeFileSchema = Type.Object(
   {

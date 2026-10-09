@@ -12,7 +12,7 @@ export const StudentResponseSchema = Type.Object({
 
 export const StudentIdSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
-});
+}, { additionalProperties: false });
 
 export const CreateStudentSchema = Type.Object(
   {

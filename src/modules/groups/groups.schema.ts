@@ -18,14 +18,20 @@ export const GroupResponseSchema = Type.Object({
 });
 
 // СХЕМА ДЛЯ ПАРАМЕТРА ID
-export const GroupIdSchema = Type.Object({
-  id: Type.Integer({ minimum: 1 }),
-});
+export const GroupIdSchema = Type.Object(
+  {
+    id: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+);
 
 // СХЕМА ДЛЯ QUERYSTRING
-export const GroupsFilterSchema = Type.Object({
-  courseId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+export const GroupsFilterSchema = Type.Object(
+  {
+    courseId: Type.Optional(Type.Integer({ minimum: 1 })),
+  },
+  { additionalProperties: false },
+);
 
 // СХЕМА ДЛЯ СОЗДАНИЯ
 export const CreateGroupSchema = Type.Object(

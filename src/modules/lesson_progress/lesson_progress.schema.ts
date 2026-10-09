@@ -13,20 +13,17 @@ export const LessonProgressResponseSchema = Type.Object({
 
 export const LessonProgressIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const LessonProgressFilterSchema = Type.Object({
   studentId: Type.Optional(Type.String({ format: "uuid" })),
   lessonId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreateLessonProgressSchema = Type.Object(
   {
     id_student: Type.String({ format: "uuid" }),
     id_lesson: Type.Integer({ minimum: 1 }),
-    theory_completed_at: Type.Optional(
-      Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
-    ),
   },
   { additionalProperties: false },
 );

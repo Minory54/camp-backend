@@ -22,3 +22,4 @@ Camp 2026.code-workspace
 
 docs/
 migrations/
+.seed-test-credentials.json

@@ -7,9 +7,12 @@ export const CodeLanguageResponseSchema = Type.Object({
 });
 
 // СХЕМА ДЛЯ ПАРАМЕТРА ID
-export const CodeLanguageIdSchema = Type.Object({
-  id: Type.Integer({ minimum: 1 }),
-});
+export const CodeLanguageIdSchema = Type.Object(
+  {
+    id: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+);
 
 // СХЕМА ДЛЯ СОЗДАНИЯ
 export const CreateCodeLanguageSchema = Type.Object(

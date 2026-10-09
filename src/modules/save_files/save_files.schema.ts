@@ -11,12 +11,12 @@ export const SaveFileResponseSchema = Type.Object({
 
 export const SaveFileIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const SaveFilesFilterSchema = Type.Object({
   practiceSaveId: Type.Optional(Type.Integer({ minimum: 1 })),
   practiceFileId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreateSaveFileSchema = Type.Object(
   {

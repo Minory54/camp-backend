@@ -9,11 +9,11 @@ export const QuestionOptionResponseSchema = Type.Object({
 
 export const QuestionOptionIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const QuestionOptionsFilterSchema = Type.Object({
   questionId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreateQuestionOptionSchema = Type.Object(
   {
@@ -27,6 +27,7 @@ export const CreateQuestionOptionSchema = Type.Object(
 
 export const UpdateQuestionOptionSchema = Type.Partial(CreateQuestionOptionSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreateQuestionOptionData = Static<typeof CreateQuestionOptionSchema>;

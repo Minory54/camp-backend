@@ -13,7 +13,7 @@ export const PracticeResponseSchema = Type.Object({
 
 export const PracticeIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const CreatePracticeSchema = Type.Object(
   {
@@ -40,10 +40,10 @@ export const CheckPracticeSchema = Type.Object({
     Type.Object({
       id_practice_file: Type.Integer({ minimum: 1 }),
       code: Type.String({ maxLength: 200_000 }),
-    }),
+    }, { additionalProperties: false }),
     { minItems: 1, maxItems: 30 },
   ),
-});
+}, { additionalProperties: false });
 
 export const CheckPracticeResponseSchema = Type.Object({
   passed: Type.Boolean(),

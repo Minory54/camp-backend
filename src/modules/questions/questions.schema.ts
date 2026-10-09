@@ -19,11 +19,11 @@ export const QuestionResponseSchema = Type.Object({
 
 export const QuestionIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const QuestionsFilterSchema = Type.Object({
   testId: Type.Optional(Type.Integer({ minimum: 1 })),
-});
+}, { additionalProperties: false });
 
 export const CreateQuestionSchema = Type.Object(
   {

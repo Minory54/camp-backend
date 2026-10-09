@@ -8,7 +8,7 @@ export const TechnologyResponseSchema = Type.Object({
 
 export const TechnologyIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
-});
+}, { additionalProperties: false });
 
 export const CreateTechnologySchema = Type.Object(
   {
