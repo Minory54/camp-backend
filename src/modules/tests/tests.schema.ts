@@ -12,13 +12,17 @@ export const TestIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
 });
 
-export const CreateTestSchema = Type.Object({
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-});
+export const CreateTestSchema = Type.Object(
+  {
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+    description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdateTestSchema = Type.Partial(CreateTestSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export const CheckAnswerSchema = Type.Object({

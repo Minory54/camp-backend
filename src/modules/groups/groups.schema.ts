@@ -28,16 +28,20 @@ export const GroupsFilterSchema = Type.Object({
 });
 
 // СХЕМА ДЛЯ СОЗДАНИЯ
-export const CreateGroupSchema = Type.Object({
-  id_course: Type.Integer({ minimum: 1 }),
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  position: Type.Integer({ minimum: 1 }),
-  state: Type.Optional(GroupStateResponseSchema),
-});
+export const CreateGroupSchema = Type.Object(
+  {
+    id_course: Type.Integer({ minimum: 1 }),
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+    position: Type.Integer({ minimum: 1 }),
+    state: Type.Optional(GroupStateResponseSchema),
+  },
+  { additionalProperties: false },
+);
 
 // СХЕМА ДЛЯ ОБНОВЛЕНИЯ
 export const UpdateGroupSchema = Type.Partial(CreateGroupSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 // ТИПЫ

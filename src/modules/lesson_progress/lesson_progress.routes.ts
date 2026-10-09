@@ -4,7 +4,6 @@ import {
   LessonProgressResponseSchema,
   LessonProgressIdSchema,
   CreateLessonProgressSchema,
-  UpdateLessonProgressSchema,
   LessonProgressFilterSchema,
 } from "./lesson_progress.schema.js";
 import { requireStudent, assertStudentOwner } from "../students/students.service.js";
@@ -59,17 +58,17 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
   );
 
-  fastify.patch(
-    "/:id",
-    {
-      schema: {
-        params: LessonProgressIdSchema,
-        body: UpdateLessonProgressSchema,
-        response: { 200: LessonProgressResponseSchema },
-      },
-    },
-    async (request) => service.updateLessonProgress(request.params.id, request.body),
-  );
+  // fastify.patch(
+  //   "/:id",
+  //   {
+  //     schema: {
+  //       params: LessonProgressIdSchema,
+  //       body: UpdateLessonProgressSchema,
+  //       response: { 200: LessonProgressResponseSchema },
+  //     },
+  //   },
+  //   async (request) => service.updateLessonProgress(request.params.id, request.body),
+  // );
 
   fastify.delete("/:id", { schema: { params: LessonProgressIdSchema } }, async (request, reply) => {
     await service.deleteLessonProgress(request.params.id);

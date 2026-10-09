@@ -7,7 +7,7 @@ import { db } from "../src/prisma/db.js";
 import { DOCUMENT_STRUCTURE_TEST_JS } from "../src/prisma/seeds/practice-test-sources.js";
 import { runPracticeCheck } from "../src/modules/practices/practice-check.runner.js";
 
-const app = buildApp();
+const app = await buildApp();
 const tag = randomUUID();
 const studentToken = randomBytes(32).toString("base64url");
 const otherStudentToken = randomBytes(32).toString("base64url");
@@ -144,7 +144,9 @@ function submit(
   return app.inject({
     method: "POST",
     url: "/api/practices/check",
-    headers: { authorization: `Bearer ${id_student === studentId ? studentToken : otherStudentToken}` },
+    headers: {
+      authorization: `Bearer ${id_student === studentId ? studentToken : otherStudentToken}`,
+    },
     payload: { id_lesson, id_student, files },
   });
 }
@@ -348,16 +350,29 @@ test("practice submission lifecycle, file validation, CSS-only and concurrency",
 
 test("document structure check reads source rather than browser-generated tags", async () => {
   const file = { id: 1, filename: "index.html", language: "html" as const };
-  const fragment = await runPracticeCheck([{ ...file, code: "<h2>Привет</h2>" }], DOCUMENT_STRUCTURE_TEST_JS);
+  const fragment = await runPracticeCheck(
+    [{ ...file, code: "<h2>Привет</h2>" }],
+    DOCUMENT_STRUCTURE_TEST_JS,
+  );
   assert.equal(fragment.status, "failed");
-  const comment = await runPracticeCheck([{
-    ...file,
-    code: "<!doctype html><!-- <html><head></head><body></body> --><h2>Привет</h2>",
-  }], DOCUMENT_STRUCTURE_TEST_JS);
+  const comment = await runPracticeCheck(
+    [
+      {
+        ...file,
+        code: "<!doctype html><!-- <html><head></head><body></body> --><h2>Привет</h2>",
+      },
+    ],
+    DOCUMENT_STRUCTURE_TEST_JS,
+  );
   assert.equal(comment.status, "failed");
-  const document = await runPracticeCheck([{
-    ...file,
-    code: "<!doctype html><html><head></head><body><h2>Привет</h2></body></html>",
-  }], DOCUMENT_STRUCTURE_TEST_JS);
+  const document = await runPracticeCheck(
+    [
+      {
+        ...file,
+        code: "<!doctype html><html><head></head><body><h2>Привет</h2></body></html>",
+      },
+    ],
+    DOCUMENT_STRUCTURE_TEST_JS,
+  );
   assert.deepEqual(document, { status: "passed" });
 });

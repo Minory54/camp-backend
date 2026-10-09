@@ -27,13 +27,17 @@ export const CourseIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
 });
 
-export const CreateCourseSchema = Type.Object({
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-});
+export const CreateCourseSchema = Type.Object(
+  {
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+    description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdateCourseSchema = Type.Partial(CreateCourseSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreateCourseData = Static<typeof CreateCourseSchema>;

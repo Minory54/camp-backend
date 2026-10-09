@@ -15,15 +15,19 @@ export const PracticeIdSchema = Type.Object({
   id: Type.Integer({ minimum: 1 }),
 });
 
-export const CreatePracticeSchema = Type.Object({
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-  mdx_source: Type.String({ minLength: 1, pattern: "\\S" }),
-  test_js: Type.String({ minLength: 1, pattern: "\\S" }),
-});
+export const CreatePracticeSchema = Type.Object(
+  {
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+    description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    mdx_source: Type.String({ minLength: 1, pattern: "\\S" }),
+    test_js: Type.String({ minLength: 1, pattern: "\\S" }),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdatePracticeSchema = Type.Partial(CreatePracticeSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreatePracticeData = Static<typeof CreatePracticeSchema>;

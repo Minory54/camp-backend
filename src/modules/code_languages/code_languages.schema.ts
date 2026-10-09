@@ -12,13 +12,17 @@ export const CodeLanguageIdSchema = Type.Object({
 });
 
 // СХЕМА ДЛЯ СОЗДАНИЯ
-export const CreateCodeLanguageSchema = Type.Object({
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-});
+export const CreateCodeLanguageSchema = Type.Object(
+  {
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+  },
+  { additionalProperties: false },
+);
 
 // СХЕМА ДЛЯ ОБНОВЛЕНИЯ
 export const UpdateCodeLanguageSchema = Type.Partial(CreateCodeLanguageSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 // ТИПЫ

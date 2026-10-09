@@ -74,14 +74,15 @@ function normalize(data: UpdateSaveFileData): UpdateSaveFileData {
 }
 
 async function validate(data: CreateSaveFileData, id?: number) {
-  const practiceSaveExists = await repository.idPracticeSaveExists(data.id_practice_save);
-  if (!practiceSaveExists) throw new ResponseError(404, "Указанное сохранение практики не найдено");
-  const practiceFileExists = await repository.idPracticeFileExists(data.id_practice_file);
-  if (!practiceFileExists) throw new ResponseError(404, "Указанный файл практики не найден");
+  const [save, file] = await Promise.all([
+    repository.findPracticeSave(data.id_practice_save),
+    repository.findPracticeFile(data.id_practice_file),
+  ]);
+  if (save === null) throw new ResponseError(404, "Указанное сохранение практики не найдено");
+  if (file === null) throw new ResponseError(404, "Указанный файл практики не найден");
+  if (save.id_practice !== file.id_practice)
+    throw new ResponseError(400, "Файл не принадлежит практике этого сохранения");
   const existing = await repository.findByUnique(data.id_practice_save, data.id_practice_file);
   if (existing && existing.id !== id)
-    throw new ResponseError(
-      409,
-      "Запись с такими значениями id_practice_save и id_practice_file уже существует",
-    );
+    throw new ResponseError(409, "Файл уже добавлен в это сохранение");
 }

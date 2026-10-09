@@ -15,23 +15,19 @@ export const QuestionOptionsFilterSchema = Type.Object({
   questionId: Type.Optional(Type.Integer({ minimum: 1 })),
 });
 
-export const CreateQuestionOptionSchema = Type.Object({
-  id_question: Type.Integer({ minimum: 1 }),
-  position: Type.Integer({ minimum: 1 }),
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  is_correct: Type.Optional(Type.Boolean()),
-});
-
-export const UpdateQuestionOptionSchema = Type.Partial(
-  CreateQuestionOptionSchema,
+export const CreateQuestionOptionSchema = Type.Object(
   {
-    minProperties: 1,
+    id_question: Type.Integer({ minimum: 1 }),
+    position: Type.Integer({ minimum: 1 }),
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+    is_correct: Type.Optional(Type.Boolean()),
   },
+  { additionalProperties: false },
 );
 
-export type CreateQuestionOptionData = Static<
-  typeof CreateQuestionOptionSchema
->;
-export type UpdateQuestionOptionData = Static<
-  typeof UpdateQuestionOptionSchema
->;
+export const UpdateQuestionOptionSchema = Type.Partial(CreateQuestionOptionSchema, {
+  minProperties: 1,
+});
+
+export type CreateQuestionOptionData = Static<typeof CreateQuestionOptionSchema>;
+export type UpdateQuestionOptionData = Static<typeof UpdateQuestionOptionSchema>;

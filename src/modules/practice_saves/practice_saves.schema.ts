@@ -19,14 +19,21 @@ export const PracticeSavesFilterSchema = Type.Object({
   practiceId: Type.Optional(Type.Integer({ minimum: 1 })),
 });
 
-export const CreatePracticeSaveSchema = Type.Object({
-  id_student: Type.String({ format: "uuid" }),
-  id_practice: Type.Integer({ minimum: 1 }),
-});
+export const CreatePracticeSaveSchema = Type.Object(
+  {
+    id_student: Type.String({ format: "uuid" }),
+    id_practice: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+);
 
-export const UpdatePracticeSaveSchema = Type.Partial(CreatePracticeSaveSchema, {
-  minProperties: 1,
-});
+export const UpdatePracticeSaveSchema = Type.Partial(
+  CreatePracticeSaveSchema,
+  {
+    minProperties: 1,
+    additionalProperties: false,
+  },
+);
 
 export type CreatePracticeSaveData = Static<typeof CreatePracticeSaveSchema>;
 export type UpdatePracticeSaveData = Static<typeof UpdatePracticeSaveSchema>;

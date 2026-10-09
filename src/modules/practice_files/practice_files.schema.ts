@@ -20,15 +20,19 @@ export const PracticeFilesFilterSchema = Type.Object({
   codeLanguageId: Type.Optional(Type.Integer({ minimum: 1 })),
 });
 
-export const CreatePracticeFileSchema = Type.Object({
-  id_practice: Type.Integer({ minimum: 1 }),
-  id_code_language: Type.Integer({ minimum: 1 }),
-  code: Type.String(),
-  filename: Type.String({ minLength: 1, pattern: "\\S" }),
-});
+export const CreatePracticeFileSchema = Type.Object(
+  {
+    id_practice: Type.Integer({ minimum: 1 }),
+    id_code_language: Type.Integer({ minimum: 1 }),
+    code: Type.String(),
+    filename: Type.String({ minLength: 1, pattern: "\\S" }),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdatePracticeFileSchema = Type.Partial(CreatePracticeFileSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreatePracticeFileData = Static<typeof CreatePracticeFileSchema>;

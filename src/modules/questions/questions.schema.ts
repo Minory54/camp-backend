@@ -25,18 +25,22 @@ export const QuestionsFilterSchema = Type.Object({
   testId: Type.Optional(Type.Integer({ minimum: 1 })),
 });
 
-export const CreateQuestionSchema = Type.Object({
-  id_test: Type.Integer({ minimum: 1 }),
-  position: Type.Integer({ minimum: 1 }),
-  title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-  type: Type.Optional(QuestionTypeSchema),
-  code_block: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-  id_code_language: Type.Optional(Type.Union([Type.Integer({ minimum: 1 }), Type.Null()])),
-});
+export const CreateQuestionSchema = Type.Object(
+  {
+    id_test: Type.Integer({ minimum: 1 }),
+    position: Type.Integer({ minimum: 1 }),
+    title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
+    description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    type: Type.Optional(QuestionTypeSchema),
+    code_block: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    id_code_language: Type.Optional(Type.Union([Type.Integer({ minimum: 1 }), Type.Null()])),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdateQuestionSchema = Type.Partial(CreateQuestionSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreateQuestionData = Static<typeof CreateQuestionSchema>;

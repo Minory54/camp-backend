@@ -18,14 +18,18 @@ export const SaveFilesFilterSchema = Type.Object({
   practiceFileId: Type.Optional(Type.Integer({ minimum: 1 })),
 });
 
-export const CreateSaveFileSchema = Type.Object({
-  id_practice_save: Type.Integer({ minimum: 1 }),
-  id_practice_file: Type.Integer({ minimum: 1 }),
-  code: Type.String(),
-});
+export const CreateSaveFileSchema = Type.Object(
+  {
+    id_practice_save: Type.Integer({ minimum: 1 }),
+    id_practice_file: Type.Integer({ minimum: 1 }),
+    code: Type.String(),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdateSaveFileSchema = Type.Partial(CreateSaveFileSchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreateSaveFileData = Static<typeof CreateSaveFileSchema>;

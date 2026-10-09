@@ -27,10 +27,7 @@ export async function findById(id: number) {
     .first();
 }
 
-export async function findByUnique(
-  id_practice_save: number,
-  id_practice_file: number,
-) {
+export async function findByUnique(id_practice_save: number, id_practice_file: number) {
   return db.orm.public.Save_files.first({ id_practice_save, id_practice_file });
 }
 
@@ -40,6 +37,14 @@ export async function idPracticeSaveExists(id: number) {
 
 export async function idPracticeFileExists(id: number) {
   return (await db.orm.public.Practice_files.first({ id })) !== null;
+}
+
+export async function findPracticeSave(id: number) {
+  return db.orm.public.Practice_saves.where({ id }).select("id", "id_practice").first();
+}
+
+export async function findPracticeFile(id: number) {
+  return db.orm.public.Practice_files.where({ id }).select("id", "id_practice").first();
 }
 
 export async function create(data: CreateSaveFileData) {

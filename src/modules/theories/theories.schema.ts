@@ -22,16 +22,20 @@ export const TheoriesFilterSchema = Type.Object({
 });
 
 // Создание теории
-export const CreateTheorySchema = Type.Object({
-  title: Type.String({ minLength: 1, maxLength: 255 }),
-  description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-  id_technology: Type.Integer({ minimum: 1 }),
-  position: Type.Integer({ minimum: 1 }),
-  mdx_source: Type.String({ minLength: 1 }),
-});
+export const CreateTheorySchema = Type.Object(
+  {
+    title: Type.String({ minLength: 1, maxLength: 255 }),
+    description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    id_technology: Type.Integer({ minimum: 1 }),
+    position: Type.Integer({ minimum: 1 }),
+    mdx_source: Type.String({ minLength: 1 }),
+  },
+  { additionalProperties: false },
+);
 
 export const UpdateTheorySchema = Type.Partial(CreateTheorySchema, {
   minProperties: 1,
+  additionalProperties: false,
 });
 
 export type CreateTheoryData = Static<typeof CreateTheorySchema>;
