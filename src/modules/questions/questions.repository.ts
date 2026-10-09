@@ -1,8 +1,5 @@
 import { db } from "../../prisma/db.js";
-import type {
-  CreateQuestionData,
-  UpdateQuestionData,
-} from "./questions.schema.js";
+import type { CreateQuestionData, UpdateQuestionData } from "./questions.schema.js";
 
 export async function findAll(parentId?: number) {
   const collection = db.orm.public.Test_questions;
@@ -11,13 +8,21 @@ export async function findAll(parentId?: number) {
       .where({ id_test: parentId })
       .orderBy((row) => row.position.asc())
       .include("code_language")
-      .include("Question_options")
+      .include("Question_options", (options) =>
+        options
+          .select("id", "id_question", "position", "title")
+          .orderBy((option) => option.position.asc()),
+      )
       .all();
   }
   return collection
     .orderBy([(row) => row.id_test.asc(), (row) => row.position.asc()])
     .include("code_language")
-    .include("Question_options")
+    .include("Question_options", (options) =>
+      options
+        .select("id", "id_question", "position", "title")
+        .orderBy((option) => option.position.asc()),
+    )
     .all();
 }
 
@@ -28,10 +33,7 @@ export async function findById(id: number) {
     .first();
 }
 
-export async function findByParentAndPosition(
-  parentId: number,
-  position: number,
-) {
+export async function findByParentAndPosition(parentId: number, position: number) {
   return db.orm.public.Test_questions.first({ id_test: parentId, position });
 }
 

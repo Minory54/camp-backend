@@ -19,3 +19,6 @@ dist/
 .DS_Store
 
 Camp 2026.code-workspace
+
+docs/
+migrations/

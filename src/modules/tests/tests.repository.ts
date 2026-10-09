@@ -9,8 +9,10 @@ export async function findAll() {
       test_questions
         .orderBy((test_questions) => test_questions.position.asc())
         .include("code_language")
-        .include("Question_options", (question_options) =>
-          question_options.orderBy((question_options) => question_options.position.asc()),
+        .include("Question_options", (options) =>
+          options
+            .select("id", "id_question", "position", "title")
+            .orderBy((option) => option.position.asc()),
         ),
     )
     .all();
@@ -21,8 +23,10 @@ export async function findById(id: number) {
     .include("Test_questions", (test_questions) =>
       test_questions
         .orderBy((test_questions) => test_questions.position.asc())
-        .include("Question_options", (question_options) =>
-          question_options.orderBy((question_options) => question_options.position.asc()),
+        .include("Question_options", (options) =>
+          options
+            .select("id", "id_question", "position", "title")
+            .orderBy((option) => option.position.asc()),
         ),
     )
     .first();
@@ -53,11 +57,7 @@ export async function findLessonProgress(id_student: string, id_lesson: number) 
   return db.orm.public.Lesson_progress.first({ id_student, id_lesson });
 }
 
-export async function completeTest(
-  id_student: string,
-  id_lesson: number,
-  completedAt: string,
-) {
+export async function completeTest(id_student: string, id_lesson: number, completedAt: string) {
   return db.orm.public.Lesson_progress.where({ id_student, id_lesson })
     .where((progress) => progress.test_completed_at.isNull())
     .update({ test_completed_at: completedAt });

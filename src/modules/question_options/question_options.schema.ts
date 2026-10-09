@@ -5,8 +5,6 @@ export const QuestionOptionResponseSchema = Type.Object({
   id_question: Type.Integer({ minimum: 1 }),
   position: Type.Integer({ minimum: 1 }),
   title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
-  is_correct: Type.Boolean(),
-  question: Type.Optional(Type.Any()),
 });
 
 export const QuestionOptionIdSchema = Type.Object({

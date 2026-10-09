@@ -5,7 +5,12 @@ import type {
 } from "./question_options.schema.js";
 
 export async function findAll(parentId?: number) {
-  const collection = db.orm.public.Question_options;
+  const collection = db.orm.public.Question_options.select(
+    "id",
+    "id_question",
+    "position",
+    "title",
+  );
   if (parentId !== undefined) {
     return collection
       .where({ id_question: parentId })
@@ -21,14 +26,12 @@ export async function findAll(parentId?: number) {
 
 export async function findById(id: number) {
   return db.orm.public.Question_options.where({ id })
+    .select("id", "id_question", "position", "title")
     .include("question")
     .first();
 }
 
-export async function findByParentAndPosition(
-  parentId: number,
-  position: number,
-) {
+export async function findByParentAndPosition(parentId: number, position: number) {
   return db.orm.public.Question_options.first({
     id_question: parentId,
     position,

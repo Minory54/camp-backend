@@ -5,7 +5,7 @@ export const TestResponseSchema = Type.Object({
   id: Type.Integer(),
   title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
   description: Type.Union([Type.String(), Type.Null()]),
-  Test_questions: Type.Optional(Type.Array(Type.Any())),
+  Test_questions: Type.Optional(Type.Array(QuestionResponseSchema)),
 });
 
 export const TestIdSchema = Type.Object({
