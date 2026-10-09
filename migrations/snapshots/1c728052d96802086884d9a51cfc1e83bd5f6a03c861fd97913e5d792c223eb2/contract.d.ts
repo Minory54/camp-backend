@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5760c01d8e756309015d9a1a17a3bcd870a08d220a176dd83848ef2831df3ef8'>;
+  StorageHashBase<'1c728052d96802086884d9a51cfc1e83bd5f6a03c861fd97913e5d792c223eb2'>;
 export type ExecutionHash =
   ExecutionHashBase<'3a2dad1363db3b13b756c09450195efc78bddff6db64336aea94006993731728'>;
 export type ProfileHash =
@@ -310,18 +310,12 @@ export type FieldOutputTypes = {
       readonly id_practice_file: CodecTypes['pg/int4@1']['output'];
       readonly code: CodecTypes['pg/text@1']['output'];
     };
-    readonly Student_sessions: {
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly id_student: CodecTypes['pg/uuid@1']['output'];
-      readonly token_hash: CodecTypes['pg/text@1']['output'];
-      readonly created_at: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly expires_at: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
     readonly Students: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly display_code: CodecTypes['pg/text@1']['output'];
       readonly recovery_code: CodecTypes['pg/text@1']['output'];
       readonly label: CodecTypes['pg/text@1']['output'] | null;
+      readonly access_token: CodecTypes['pg/text@1']['output'];
       readonly created_at: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updated_at: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -424,18 +418,12 @@ export type FieldInputTypes = {
       readonly id_practice_file: CodecTypes['pg/int4@1']['input'];
       readonly code: CodecTypes['pg/text@1']['input'];
     };
-    readonly Student_sessions: {
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly id_student: CodecTypes['pg/uuid@1']['input'];
-      readonly token_hash: CodecTypes['pg/text@1']['input'];
-      readonly created_at: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly expires_at: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
     readonly Students: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly display_code: CodecTypes['pg/text@1']['input'];
       readonly recovery_code: CodecTypes['pg/text@1']['input'];
       readonly label: CodecTypes['pg/text@1']['input'] | null;
+      readonly access_token: CodecTypes['pg/text@1']['input'];
       readonly created_at: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updated_at: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -538,14 +526,8 @@ export type StorageColumnTypes = {
       readonly id_practice_file: CodecTypes['pg/int4@1']['output'];
       readonly id_practice_save: CodecTypes['pg/int4@1']['output'];
     };
-    readonly student_sessions: {
-      readonly created_at: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly expires_at: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly id_student: CodecTypes['pg/uuid@1']['output'];
-      readonly token_hash: CodecTypes['pg/text@1']['output'];
-    };
     readonly students: {
+      readonly access_token: CodecTypes['pg/text@1']['output'];
       readonly created_at: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly display_code: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
@@ -652,14 +634,8 @@ export type StorageColumnInputTypes = {
       readonly id_practice_file: CodecTypes['pg/int4@1']['input'];
       readonly id_practice_save: CodecTypes['pg/int4@1']['input'];
     };
-    readonly student_sessions: {
-      readonly created_at: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly expires_at: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly id_student: CodecTypes['pg/uuid@1']['input'];
-      readonly token_hash: CodecTypes['pg/text@1']['input'];
-    };
     readonly students: {
+      readonly access_token: CodecTypes['pg/text@1']['input'];
       readonly created_at: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly display_code: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
@@ -1383,64 +1359,6 @@ type ContractBase = Omit<
                 },
               ];
             };
-            readonly student_sessions: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
-                  };
-                };
-                readonly id_student: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-                readonly token_hash: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly created_at: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly expires_at: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['token_hash'] }];
-              indexes: readonly [
-                {
-                  readonly name: 'sessions_student_idx_d8b13a38';
-                  readonly prefix: 'sessions_student_idx';
-                  readonly columns: readonly ['id_student'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'student_sessions';
-                    readonly columns: readonly ['id_student'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'students';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
             readonly students: {
               columns: {
                 readonly id: {
@@ -1467,6 +1385,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly access_token: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
                 readonly created_at: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-string@1';
@@ -1483,6 +1406,7 @@ type ContractBase = Omit<
               uniques: readonly [
                 { readonly columns: readonly ['display_code'] },
                 { readonly columns: readonly ['recovery_code'] },
+                { readonly columns: readonly ['access_token'] },
               ];
               indexes: readonly [];
               foreignKeys: readonly [];
@@ -1729,10 +1653,6 @@ type ContractBase = Omit<
     };
     readonly courses: { readonly namespace: 'public' & NamespaceId; readonly model: 'Courses' };
     readonly students: { readonly namespace: 'public' & NamespaceId; readonly model: 'Students' };
-    readonly student_sessions: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'Student_sessions';
-    };
     readonly technologies: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Technologies';
@@ -2410,60 +2330,6 @@ type ContractBase = Omit<
               };
             };
           };
-          readonly Student_sessions: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly id_student: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-              readonly token_hash: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly created_at: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly expires_at: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly student: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Students';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['id_student'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'student_sessions';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly id_student: { readonly column: 'id_student' };
-                readonly token_hash: { readonly column: 'token_hash' };
-                readonly created_at: { readonly column: 'created_at' };
-                readonly expires_at: { readonly column: 'expires_at' };
-              };
-            };
-          };
           readonly Students: {
             readonly fields: {
               readonly id: {
@@ -2480,6 +2346,10 @@ type ContractBase = Omit<
               };
               readonly label: {
                 readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly access_token: {
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly created_at: {
@@ -2520,17 +2390,6 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id_student'];
                 };
               };
-              readonly Student_sessions: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Student_sessions';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['id_student'];
-                };
-              };
             };
             readonly storage: {
               readonly table: 'students';
@@ -2540,6 +2399,7 @@ type ContractBase = Omit<
                 readonly display_code: { readonly column: 'display_code' };
                 readonly recovery_code: { readonly column: 'recovery_code' };
                 readonly label: { readonly column: 'label' };
+                readonly access_token: { readonly column: 'access_token' };
                 readonly created_at: { readonly column: 'created_at' };
                 readonly updated_at: { readonly column: 'updated_at' };
               };

@@ -44,10 +44,6 @@
       "model": "Save_files",
       "namespace": "public"
     },
-    "student_sessions": {
-      "model": "Student_sessions",
-      "namespace": "public"
-    },
     "students": {
       "model": "Students",
       "namespace": "public"
@@ -1085,86 +1081,15 @@
               "table": "save_files"
             }
           },
-          "Student_sessions": {
+          "Students": {
             "fields": {
-              "created_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
-              "expires_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "id_student": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              },
-              "token_hash": {
+              "access_token": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
-              }
-            },
-            "relations": {
-              "student": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "id_student"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Students",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "created_at": {
-                  "column": "created_at"
-                },
-                "expires_at": {
-                  "column": "expires_at"
-                },
-                "id": {
-                  "column": "id"
-                },
-                "id_student": {
-                  "column": "id_student"
-                },
-                "token_hash": {
-                  "column": "token_hash"
-                }
               },
-              "namespaceId": "public",
-              "table": "student_sessions"
-            }
-          },
-          "Students": {
-            "fields": {
               "created_at": {
                 "nullable": false,
                 "type": {
@@ -1238,25 +1163,13 @@
                   "model": "Practice_saves",
                   "namespace": "public"
                 }
-              },
-              "Student_sessions": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "id_student"
-                  ]
-                },
-                "to": {
-                  "model": "Student_sessions",
-                  "namespace": "public"
-                }
               }
             },
             "storage": {
               "fields": {
+                "access_token": {
+                  "column": "access_token"
+                },
                 "created_at": {
                   "column": "created_at"
                 },
@@ -2540,93 +2453,13 @@
                 }
               ]
             },
-            "student_sessions": {
-              "checks": [
-                {
-                  "expression": "expires_at > created_at",
-                  "name": "sessions_valid_expiry_5a5e9d22",
-                  "prefix": "sessions_valid_expiry"
-                }
-              ],
+            "students": {
               "columns": {
-                "created_at": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
-                "expires_at": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
-                  "nativeType": "int4",
-                  "nullable": false
-                },
-                "id_student": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": false
-                },
-                "token_hash": {
+                "access_token": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "id_student"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "student_sessions"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "students"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "id_student"
-                  ],
-                  "name": "sessions_student_idx_d8b13a38",
-                  "prefix": "sessions_student_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": [
-                {
-                  "columns": [
-                    "token_hash"
-                  ]
-                }
-              ]
-            },
-            "students": {
-              "columns": {
+                },
                 "created_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -2682,6 +2515,11 @@
                 {
                   "columns": [
                     "recovery_code"
+                  ]
+                },
+                {
+                  "columns": [
+                    "access_token"
                   ]
                 }
               ]
@@ -2998,7 +2836,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5760c01d8e756309015d9a1a17a3bcd870a08d220a176dd83848ef2831df3ef8"
+    "storageHash": "1c728052d96802086884d9a51cfc1e83bd5f6a03c861fd97913e5d792c223eb2"
   },
   "execution": {
     "executionHash": "3a2dad1363db3b13b756c09450195efc78bddff6db64336aea94006993731728",

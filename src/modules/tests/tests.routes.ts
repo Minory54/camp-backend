@@ -8,6 +8,7 @@ import {
   CheckAnswerSchema,
   CheckAnswerResponseSchema,
 } from "./tests.schema.js";
+import { requireStudent, assertStudentOwner } from "../students/students.service.js";
 import * as service from "./tests.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -24,12 +25,16 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
     "/answer",
     {
+      onRequest: requireStudent,
       schema: {
         body: CheckAnswerSchema,
         response: { 200: CheckAnswerResponseSchema },
       },
     },
-    async (request) => service.checkAnswer(request.body),
+    async (request) => {
+      assertStudentOwner(request, request.body.id_student);
+      return service.checkAnswer({ ...request.body, id_student: request.studentId });
+    },
   );
 
   fastify.post(

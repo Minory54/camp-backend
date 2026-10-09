@@ -34,31 +34,32 @@ model Courses {
 
 // 3 
 model Students {
-  id               Uuid                       @id @default(dbgenerated("gen_random_uuid()"))
-  display_code     String                     @unique
-  recovery_code    String                     @unique
-  label            String?
-  created_at       TimestamptzString          @default(now())
-  updated_at       temporal.updatedAtString()
+  id              Uuid                       @id @default(dbgenerated("gen_random_uuid()"))
+  display_code    String                     @unique
+  recovery_code   String                     @unique
+  label           String?
+  access_token    String                     @unique
+  created_at      TimestamptzString          @default(now())
+  updated_at      temporal.updatedAtString()
 
-  Student_sessions Student_sessions[]
-  Lesson_progress  Lesson_progress[]
-  Practice_saves   Practice_saves[]
+  //Student_sessions Student_sessions[]
+  Lesson_progress Lesson_progress[]
+  Practice_saves  Practice_saves[]
 }
 
 // 4
-model Student_sessions {
-  id         Int               @id @default(autoincrement())
-  id_student Uuid
-  token_hash String            @unique
-  created_at TimestamptzString @default(now())
-  expires_at TimestamptzString
+// model Student_sessions {
+//   id         Int               @id @default(autoincrement())
+//   id_student Uuid
+//   token_hash String            @unique
+//   created_at TimestamptzString @default(now())
+//   expires_at TimestamptzString
 
-  student    Students          @relation(fields:[id_student], references:[id], onDelete: Cascade)
+//   student    Students          @relation(fields:[id_student], references:[id], onDelete: Cascade)
 
-  @@index([id_student], name: "sessions_student_idx")
-  @@check(expression: "expires_at > created_at", name: "sessions_valid_expiry")
-}
+//   @@index([id_student], name: "sessions_student_idx")
+//   @@check(expression: "expires_at > created_at", name: "sessions_valid_expiry")
+// }
 
 // 5
 model Technologies {

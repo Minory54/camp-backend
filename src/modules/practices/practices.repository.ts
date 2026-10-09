@@ -6,14 +6,12 @@ export async function findAll() {
   return query
     .orderBy((row) => row.id.asc())
     .include("Lessons")
-    .include("Practice_saves")
     .include("Practice_files")
     .all();
 }
 
 export async function findById(id: number) {
   return db.orm.public.Practices.where({ id })
-    .include("Practice_saves", (Practice_saves) => Practice_saves.include("Save_files"))
     .include("Practice_files", (Practice_files) => Practice_files.include("code_language"))
     .first();
 }

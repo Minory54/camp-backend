@@ -7,9 +7,29 @@ import {
   UpdateSaveFileSchema,
   SaveFilesFilterSchema,
 } from "./save_files.schema.js";
+import { requireStudent, assertStudentOwner } from "../students/students.service.js";
+import { getPracticeSaveById } from "../practice_saves/practice_saves.service.js";
+import { ResponseError } from "../../common/errors/response.error.js";
 import * as service from "./save_files.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
+  fastify.addHook("onRequest", requireStudent);
+  fastify.addHook("preHandler", async (request) => {
+    const { id } = request.params as { id?: number };
+    if (id !== undefined) {
+      const current = await service.getSaveFileById(id);
+      if (current.practice_save === null) throw new ResponseError(404, "Сохранение не найдено");
+      assertStudentOwner(request, current.practice_save.id_student);
+    }
+    const query = request.query as { practiceSaveId?: number };
+    const body = request.body as { id_practice_save?: number } | undefined;
+    for (const saveId of [query.practiceSaveId, body?.id_practice_save]) {
+      if (saveId !== undefined) {
+        const save = await getPracticeSaveById(saveId);
+        assertStudentOwner(request, save.id_student);
+      }
+    }
+  });
   fastify.get(
     "/",
     {
@@ -18,7 +38,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
         response: { 200: Type.Array(SaveFileResponseSchema) },
       },
     },
-    async (request) => service.getSaveFiles(request.query),
+    async (request) => service.getSaveFiles(request.query, request.studentId),
   );
 
   fastify.get(

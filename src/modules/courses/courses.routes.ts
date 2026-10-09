@@ -7,6 +7,7 @@ import {
   UpdateCourseSchema,
   CourseProgressResponseSchema
 } from "./courses.schema.js";
+import { requireStudent, assertStudentOwner } from "../students/students.service.js";
 import * as service from "./courses.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -28,10 +29,11 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
   "/:id/progress",
   {
+    onRequest: requireStudent,
     schema: {
       params: CourseIdSchema,
       querystring: Type.Object({
-        studentId: Type.String({ format: "uuid" }),
+        studentId: Type.Optional(Type.String({ format: "uuid" })),
       }),
       response: {
         200: CourseProgressResponseSchema,
@@ -39,11 +41,12 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
   },
   async (request, reply) => {
-    reply.header("Cache-Control", "private, no-store");
+    if (request.query.studentId !== undefined)
+      assertStudentOwner(request, request.query.studentId);
 
     return service.getCourseProgress(
       request.params.id,
-      request.query.studentId,
+      request.studentId,
     );
   },
 );

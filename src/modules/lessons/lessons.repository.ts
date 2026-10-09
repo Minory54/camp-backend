@@ -15,7 +15,6 @@ export async function findAll(filters: LessonsQuery = {}) {
     .include("theory")
     .include("test")
     .include("practice")
-    .include("Lesson_progress")
     .all();
 }
 
@@ -25,7 +24,6 @@ export async function findById(id: number) {
     .include("theory")
     .include("test")
     .include("practice")
-    .include("Lesson_progress")
     .first();
 }
 

@@ -407,45 +407,6 @@
     ]
   },
   {
-    "id": "table.student_sessions",
-    "label": "Create table \"student_sessions\"",
-    "summary": "Creates table \"student_sessions\"",
-    "operationClass": "additive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "table",
-        "name": "student_sessions"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure table \"student_sessions\" does not exist",
-        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
-        "params": [
-          "\"public\".\"student_sessions\""
-        ]
-      }
-    ],
-    "execute": [
-      {
-        "description": "create table \"student_sessions\"",
-        "sql": "CREATE TABLE \"public\".\"student_sessions\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expires_at\" timestamptz NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"id_student\" uuid NOT NULL,\n  \"token_hash\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"sessions_valid_expiry_5a5e9d22\" CHECK (expires_at > created_at)\n)",
-        "params": []
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify table \"student_sessions\" exists",
-        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
-        "params": [
-          "\"public\".\"student_sessions\""
-        ]
-      }
-    ]
-  },
-  {
     "id": "table.students",
     "label": "Create table \"students\"",
     "summary": "Creates table \"students\"",
@@ -470,7 +431,7 @@
     "execute": [
       {
         "description": "create table \"students\"",
-        "sql": "CREATE TABLE \"public\".\"students\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"display_code\" text NOT NULL,\n  \"id\" uuid DEFAULT (gen_random_uuid()) NOT NULL,\n  \"label\" text,\n  \"recovery_code\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "sql": "CREATE TABLE \"public\".\"students\" (\n  \"access_token\" text NOT NULL,\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"display_code\" text NOT NULL,\n  \"id\" uuid DEFAULT (gen_random_uuid()) NOT NULL,\n  \"label\" text,\n  \"recovery_code\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
         "params": []
       }
     ],
@@ -1019,48 +980,6 @@
     ]
   },
   {
-    "id": "unique.student_sessions.student_sessions_token_hash_key",
-    "label": "Add unique constraint on \"student_sessions\" (token_hash)",
-    "operationClass": "additive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "unique",
-        "name": "student_sessions_token_hash_key",
-        "table": "student_sessions"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure constraint \"student_sessions_token_hash_key\" does not exist",
-        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
-        "params": [
-          "student_sessions_token_hash_key",
-          "public",
-          "\"public\".\"student_sessions\""
-        ]
-      }
-    ],
-    "execute": [
-      {
-        "description": "add unique constraint \"student_sessions_token_hash_key\"",
-        "sql": "ALTER TABLE \"public\".\"student_sessions\" ADD CONSTRAINT \"student_sessions_token_hash_key\" UNIQUE (\"token_hash\")"
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify constraint \"student_sessions_token_hash_key\" exists",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
-        "params": [
-          "student_sessions_token_hash_key",
-          "public",
-          "\"public\".\"student_sessions\""
-        ]
-      }
-    ]
-  },
-  {
     "id": "unique.students.students_display_code_key",
     "label": "Add unique constraint on \"students\" (display_code)",
     "operationClass": "additive",
@@ -1138,6 +1057,48 @@
         "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
         "params": [
           "students_recovery_code_key",
+          "public",
+          "\"public\".\"students\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.students.students_access_token_key",
+    "label": "Add unique constraint on \"students\" (access_token)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "students_access_token_key",
+        "table": "students"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"students_access_token_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "students_access_token_key",
+          "public",
+          "\"public\".\"students\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"students_access_token_key\"",
+        "sql": "ALTER TABLE \"public\".\"students\" ADD CONSTRAINT \"students_access_token_key\" UNIQUE (\"access_token\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"students_access_token_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "students_access_token_key",
           "public",
           "\"public\".\"students\""
         ]
@@ -1812,45 +1773,6 @@
         "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
         "params": [
           "\"public\".\"save_files_id_practice_save_idx_4d1d5c98\""
-        ]
-      }
-    ]
-  },
-  {
-    "id": "index.student_sessions.sessions_student_idx_d8b13a38",
-    "label": "Create index \"sessions_student_idx_d8b13a38\" on \"student_sessions\"",
-    "operationClass": "additive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "index",
-        "name": "sessions_student_idx_d8b13a38",
-        "table": "student_sessions"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure index \"sessions_student_idx_d8b13a38\" does not exist",
-        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
-        "params": [
-          "\"public\".\"sessions_student_idx_d8b13a38\""
-        ]
-      }
-    ],
-    "execute": [
-      {
-        "description": "create index \"sessions_student_idx_d8b13a38\"",
-        "sql": "CREATE INDEX \"sessions_student_idx_d8b13a38\" ON \"public\".\"student_sessions\" (\"id_student\")",
-        "params": []
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify index \"sessions_student_idx_d8b13a38\" exists",
-        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
-        "params": [
-          "\"public\".\"sessions_student_idx_d8b13a38\""
         ]
       }
     ]
@@ -2556,48 +2478,6 @@
           "save_files_id_practice_save_fkey",
           "public",
           "\"public\".\"save_files\""
-        ]
-      }
-    ]
-  },
-  {
-    "id": "foreignKey.student_sessions.student_sessions_id_student_fkey",
-    "label": "Add foreign key \"student_sessions_id_student_fkey\" on \"student_sessions\"",
-    "operationClass": "additive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "foreignKey",
-        "name": "student_sessions_id_student_fkey",
-        "table": "student_sessions"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure FK \"student_sessions_id_student_fkey\" does not exist",
-        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
-        "params": [
-          "student_sessions_id_student_fkey",
-          "public",
-          "\"public\".\"student_sessions\""
-        ]
-      }
-    ],
-    "execute": [
-      {
-        "description": "add FK \"student_sessions_id_student_fkey\"",
-        "sql": "ALTER TABLE \"public\".\"student_sessions\"\nADD CONSTRAINT \"student_sessions_id_student_fkey\"\nFOREIGN KEY (\"id_student\")\nREFERENCES \"public\".\"students\" (\"id\")\nON DELETE CASCADE"
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify FK \"student_sessions_id_student_fkey\" exists",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
-        "params": [
-          "student_sessions_id_student_fkey",
-          "public",
-          "\"public\".\"student_sessions\""
         ]
       }
     ]

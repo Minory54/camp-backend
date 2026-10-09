@@ -1,13 +1,16 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
-import { randomUUID } from "node:crypto";
+import { randomUUID, randomBytes } from "node:crypto";
 import { buildApp } from "../src/app.js";
+import { hashAccessToken } from "../src/modules/students/students.service.js";
 import { db } from "../src/prisma/db.js";
 import { DOCUMENT_STRUCTURE_TEST_JS } from "../src/prisma/seeds/practice-test-sources.js";
 import { runPracticeCheck } from "../src/modules/practices/practice-check.runner.js";
 
 const app = buildApp();
 const tag = randomUUID();
+const studentToken = randomBytes(32).toString("base64url");
+const otherStudentToken = randomBytes(32).toString("base64url");
 let studentId: string;
 let otherStudentId: string;
 let practiceId: number;
@@ -30,10 +33,12 @@ before(async () => {
   const student = await db.orm.public.Students.create({
     display_code: `check-${tag}`,
     recovery_code: `recover-${tag}`,
+    access_token: hashAccessToken(studentToken),
   });
   const otherStudent = await db.orm.public.Students.create({
     display_code: `check-other-${tag}`,
     recovery_code: `recover-other-${tag}`,
+    access_token: hashAccessToken(otherStudentToken),
   });
   studentId = student.id;
   otherStudentId = otherStudent.id;
@@ -139,6 +144,7 @@ function submit(
   return app.inject({
     method: "POST",
     url: "/api/practices/check",
+    headers: { authorization: `Bearer ${id_student === studentId ? studentToken : otherStudentToken}` },
     payload: { id_lesson, id_student, files },
   });
 }

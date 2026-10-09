@@ -5,8 +5,10 @@ import type {
   SaveFilesQuery,
 } from "./save_files.schema.js";
 
-export async function findAll(filters: SaveFilesQuery = {}) {
+export async function findAll(filters: SaveFilesQuery = {}, studentId?: string) {
   let query = db.orm.public.Save_files;
+  if (studentId !== undefined)
+    query = query.where((file) => file.practice_save.some((save) => save.id_student.eq(studentId)));
   if (filters.practiceSaveId !== undefined)
     query = query.where({ id_practice_save: filters.practiceSaveId });
   if (filters.practiceFileId !== undefined)

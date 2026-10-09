@@ -1,6 +1,6 @@
 #!/usr/bin/env -S node
-import type { Contract as End } from '../../snapshots/5760c01d8e756309015d9a1a17a3bcd870a08d220a176dd83848ef2831df3ef8/contract';
-import endContract from '../../snapshots/5760c01d8e756309015d9a1a17a3bcd870a08d220a176dd83848ef2831df3ef8/contract.json' with { type: 'json' };
+import type { Contract as End } from '../../snapshots/1c728052d96802086884d9a51cfc1e83bd5f6a03c861fd97913e5d792c223eb2/contract';
+import endContract from '../../snapshots/1c728052d96802086884d9a51cfc1e83bd5f6a03c861fd97913e5d792c223eb2/contract.json' with { type: 'json' };
 import {
   Migration,
   MigrationCLI,
@@ -179,30 +179,9 @@ export default class M extends Migration<never, End> {
       }),
       this.createTable({
         schema: 'public',
-        table: 'student_sessions',
-        columns: [
-          col('created_at', 'timestamptz', {
-            notNull: true,
-            default: fn('now()'),
-            codecRef: { codecId: 'pg/timestamptz-string@1' },
-          }),
-          col('expires_at', 'timestamptz', {
-            notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-string@1' },
-          }),
-          col('id', 'SERIAL', { notNull: true, codecRef: { codecId: 'pg/int4@1' } }),
-          col('id_student', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
-          col('token_hash', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-        ],
-        constraints: [
-          primaryKey(['id']),
-          checkExpression('sessions_valid_expiry_5a5e9d22', 'expires_at > created_at'),
-        ],
-      }),
-      this.createTable({
-        schema: 'public',
         table: 'students',
         columns: [
+          col('access_token', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
           col('created_at', 'timestamptz', {
             notNull: true,
             default: fn('now()'),
@@ -340,12 +319,6 @@ export default class M extends Migration<never, End> {
       }),
       this.addUnique({
         schema: 'public',
-        table: 'student_sessions',
-        constraint: 'student_sessions_token_hash_key',
-        columns: ['token_hash'],
-      }),
-      this.addUnique({
-        schema: 'public',
         table: 'students',
         constraint: 'students_display_code_key',
         columns: ['display_code'],
@@ -355,6 +328,12 @@ export default class M extends Migration<never, End> {
         table: 'students',
         constraint: 'students_recovery_code_key',
         columns: ['recovery_code'],
+      }),
+      this.addUnique({
+        schema: 'public',
+        table: 'students',
+        constraint: 'students_access_token_key',
+        columns: ['access_token'],
       }),
       this.addUnique({
         schema: 'public',
@@ -457,12 +436,6 @@ export default class M extends Migration<never, End> {
         table: 'save_files',
         index: 'save_files_id_practice_save_idx_4d1d5c98',
         columns: ['id_practice_save'],
-      }),
-      this.createIndex({
-        schema: 'public',
-        table: 'student_sessions',
-        index: 'sessions_student_idx_d8b13a38',
-        columns: ['id_student'],
       }),
       this.createIndex({
         schema: 'public',
@@ -619,16 +592,6 @@ export default class M extends Migration<never, End> {
           name: 'save_files_id_practice_save_fkey',
           columns: ['id_practice_save'],
           references: { schema: 'public', table: 'practice_saves', columns: ['id'] },
-          onDelete: 'cascade',
-        },
-      }),
-      this.addForeignKey({
-        schema: 'public',
-        table: 'student_sessions',
-        foreignKey: {
-          name: 'student_sessions_id_student_fkey',
-          columns: ['id_student'],
-          references: { schema: 'public', table: 'students', columns: ['id'] },
           onDelete: 'cascade',
         },
       }),

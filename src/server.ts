@@ -1,9 +1,10 @@
 import { validateEnv, env } from "../config/env.js";
 import { buildApp } from "./app.js";
 
-const app = buildApp();
+const app = await buildApp();
 
 const start = async () => {
+  
   try {
     validateEnv();
     await app.listen({ port: env.port, host: env.host });

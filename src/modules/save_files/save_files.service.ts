@@ -8,8 +8,8 @@ import type {
   SaveFilesQuery,
 } from "./save_files.schema.js";
 
-export async function getSaveFiles(filters: SaveFilesQuery = {}) {
-  return repository.findAll(filters);
+export async function getSaveFiles(filters: SaveFilesQuery = {}, studentId?: string) {
+  return repository.findAll(filters, studentId);
 }
 
 export async function getSaveFileById(id: number) {

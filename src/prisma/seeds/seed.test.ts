@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { db } from "../db.js";
 
 const students = [
@@ -283,24 +282,15 @@ export async function seedTest() {
   if (groups.length === 0) throw new Error("Не найдены базовые группы курса HTML/CSS");
 
   await db.transaction(async (tx) => {
-    // Ученики и их сессии
+    // Ученики
     const createdStudents = [];
     for (const student of students) {
-      createdStudents.push(await tx.orm.public.Students.create(student));
+      createdStudents.push(await tx.orm.public.Students.create({
+        ...student,
+        access_token: `test-token-${student.display_code}`,
+      }));
     }
     console.log("Ученики созданы");
-
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-    for (const student of createdStudents) {
-      await tx.orm.public.Student_sessions.create({
-        id_student: student.id,
-        token_hash: createHash("sha256")
-          .update(`test-session-${student.display_code}`)
-          .digest("hex"),
-        expires_at: expiresAt,
-      });
-    }
-    console.log("Сессии созданы");
 
     // Теория
     const createdTheories = [];

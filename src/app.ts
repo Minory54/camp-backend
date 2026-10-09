@@ -1,7 +1,6 @@
 import Fastify from "fastify";
 import groupsRoutes from "./modules/groups/groups.routes.js";
 import studentsRoutes from "./modules/students/students.routes.js";
-import studentSessionsRoutes from "./modules/student_sessions/student_sessions.routes.js";
 import theoriesRoutes from "./modules/theories/theories.routes.js";
 import testsRoutes from "./modules/tests/tests.routes.js";
 import questionsRoutes from "./modules/questions/questions.routes.js";
@@ -15,14 +14,32 @@ import practicesRoutes from "./modules/practices/practices.routes.js";
 import practiceSavesRoutes from "./modules/practice_saves/practice_saves.routes.js";
 import practiceFilesRoutes from "./modules/practice_files/practice_files.routes.js";
 import saveFilesRoutes from "./modules/save_files/save_files.routes.js";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
 
-export function buildApp() {
-  const app = Fastify({ logger: true });
+export async function buildApp() {
+  const app = Fastify({
+    logger: { redact: ["req.headers.authorization", "req.headers.cookie"] },
+    ajv: { customOptions: { removeAdditional: false } },
+  });
+  app.decorateRequest("studentId", "");
+
+  await app.register(swagger, {
+    openapi: {
+      info: {
+        title: "Camp API",
+        version: "1.0.0",
+      },
+    },
+  });
+
+  await app.register(swaggerUi, {
+    routePrefix: "/docs",
+  });
 
   app.register(groupsRoutes, { prefix: "/api/groups" });
   app.register(theoriesRoutes, { prefix: "/api/theories" });
   app.register(studentsRoutes, { prefix: "/api/students" });
-  app.register(studentSessionsRoutes, { prefix: "/api/student-sessions" });
   app.register(testsRoutes, { prefix: "/api/tests" });
   app.register(questionsRoutes, { prefix: "/api/questions" });
   app.register(questionOptionsRoutes, { prefix: "/api/question-options" });

@@ -13,14 +13,14 @@ export async function findAll(filters: LessonProgressQuery = {}) {
     query = query.where({ id_lesson: filters.lessonId });
   return query
     .orderBy((row) => row.id.asc())
-    .include("student")
+    .include("student", (student) => student.select("id", "display_code", "label", "created_at", "updated_at"))
     .include("lesson")
     .all();
 }
 
 export async function findById(id: number) {
   return db.orm.public.Lesson_progress.where({ id })
-    .include("student")
+    .include("student", (student) => student.select("id", "display_code", "label", "created_at", "updated_at"))
     .include("lesson")
     .first();
 }
