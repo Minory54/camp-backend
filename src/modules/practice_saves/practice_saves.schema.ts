@@ -8,7 +8,6 @@ export const PracticeSaveResponseSchema = Type.Object({
   updated_at: Type.String({ format: "date-time" }),
   student: Type.Optional(Type.Any()),
   practice: Type.Optional(Type.Any()),
-  Save_files: Type.Optional(Type.Array(Type.Any())),
 });
 
 export const PracticeSaveIdSchema = Type.Object({
