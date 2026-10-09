@@ -16,6 +16,7 @@ import practiceFilesRoutes from "./modules/practice_files/practice_files.routes.
 import saveFilesRoutes from "./modules/save_files/save_files.routes.js";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+import cors from "@fastify/cors";
 
 export async function buildApp() {
   const app = Fastify({
@@ -35,6 +36,12 @@ export async function buildApp() {
 
   await app.register(swaggerUi, {
     routePrefix: "/docs",
+  });
+
+  await app.register(cors, {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
   app.register(groupsRoutes, { prefix: "/api/groups" });

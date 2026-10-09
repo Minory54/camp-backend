@@ -15,7 +15,6 @@ export async function findAll(filters: PracticeFilesQuery = {}) {
     .orderBy((row) => row.id.asc())
     .include("practice")
     .include("code_language")
-    .include("Save_files")
     .all();
 }
 
@@ -23,7 +22,6 @@ export async function findById(id: number) {
   return db.orm.public.Practice_files.where({ id })
     .include("practice")
     .include("code_language")
-    .include("Save_files")
     .first();
 }
 

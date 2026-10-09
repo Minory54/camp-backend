@@ -1,10 +1,6 @@
 import { ResponseError } from "../../common/errors/response.error.js";
 import * as repository from "./lesson_progress.repository.js";
-import type {
-  CreateLessonProgressData,
-  UpdateLessonProgressData,
-  LessonProgressQuery,
-} from "./lesson_progress.schema.js";
+import type { CreateLessonProgressData, LessonProgressQuery } from "./lesson_progress.schema.js";
 
 export async function getLessonProgress(filters: LessonProgressQuery = {}) {
   return repository.findAll(filters);
@@ -22,22 +18,20 @@ export async function createLessonProgress(data: CreateLessonProgressData) {
     ...normalize(data),
 
     theory_completed_at: data.theory_completed_at ?? null,
-    practice_completed_at: data.practice_completed_at ?? null,
-    test_completed_at: data.test_completed_at ?? null,
   };
 
   await validate(normalized);
   return write(() => repository.create(normalized));
 }
 
-export async function updateLessonProgress(id: number, data: UpdateLessonProgressData) {
-  const current = await getLessonProgressById(id);
-  const normalized = normalize(data);
-  await validate({ ...current, ...normalized }, id);
-  const updated = await write(() => repository.update(id, normalized));
-  if (updated === null) throw new ResponseError(404, "Запись не найдена");
-  return updated;
-}
+// export async function updateLessonProgress(id: number, data: UpdateLessonProgressData) {
+//   const current = await getLessonProgressById(id);
+//   const normalized = normalize(data);
+//   await validate({ ...current, ...normalized }, id);
+//   const updated = await write(() => repository.update(id, normalized));
+//   if (updated === null) throw new ResponseError(404, "Запись не найдена");
+//   return updated;
+// }
 
 export async function deleteLessonProgress(id: number) {
   const deleted = await write(() => repository.remove(id), true);
@@ -77,21 +71,10 @@ async function write<T>(operation: () => Promise<T>, deleting = false): Promise<
   }
 }
 
-function normalize(data: UpdateLessonProgressData): UpdateLessonProgressData {
+function normalize(data: CreateLessonProgressData): CreateLessonProgressData {
   const normalized = { ...data };
-
   if (data.theory_completed_at != null)
     normalized.theory_completed_at = normalizeDate(data.theory_completed_at, "theory_completed_at");
-
-  if (data.practice_completed_at != null)
-    normalized.practice_completed_at = normalizeDate(
-      data.practice_completed_at,
-      "practice_completed_at",
-    );
-
-  if (data.test_completed_at != null)
-    normalized.test_completed_at = normalizeDate(data.test_completed_at, "test_completed_at");
-
   return normalized;
 }
 

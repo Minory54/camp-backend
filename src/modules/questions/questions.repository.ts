@@ -29,7 +29,11 @@ export async function findAll(parentId?: number) {
 export async function findById(id: number) {
   return db.orm.public.Test_questions.where({ id })
     .include("code_language")
-    .include("Question_options")
+    .include("Question_options", (options) =>
+      options
+        .select("id", "id_question", "position", "title")
+        .orderBy((option) => option.position.asc()),
+    )
     .first();
 }
 
