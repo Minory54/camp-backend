@@ -1,4 +1,5 @@
 import { Type, type Static } from "typebox";
+import { FLAT_PRACTICE_FILENAME_PATTERN } from "./practice-file-name.js";
 
 export const PracticeFileResponseSchema = Type.Object({
   id: Type.Integer(),
@@ -24,7 +25,7 @@ export const CreatePracticeFileSchema = Type.Object(
     id_practice: Type.Integer({ minimum: 1 }),
     id_code_language: Type.Integer({ minimum: 1 }),
     code: Type.String(),
-    filename: Type.String({ minLength: 1, pattern: "\\S" }),
+    filename: Type.String({ minLength: 1, pattern: FLAT_PRACTICE_FILENAME_PATTERN }),
   },
   { additionalProperties: false },
 );

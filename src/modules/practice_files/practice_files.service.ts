@@ -1,5 +1,6 @@
 import { ResponseError } from "../../common/errors/response.error.js";
 import * as repository from "./practice_files.repository.js";
+import { isFlatPracticeFilename } from "./practice-file-name.js";
 import type {
   CreatePracticeFileData,
   UpdatePracticeFileData,
@@ -20,6 +21,8 @@ function normalize(data: UpdatePracticeFileData): UpdatePracticeFileData {
   const normalized = { ...data };
   if (data.filename !== undefined) {
     if (!data.filename.trim()) throw new ResponseError(400, "filename не может быть пустым");
+    if (!isFlatPracticeFilename(data.filename))
+      throw new ResponseError(400, "filename должен быть именем файла без пути и каталогов");
     normalized.filename = data.filename.trim();
   }
   return normalized;

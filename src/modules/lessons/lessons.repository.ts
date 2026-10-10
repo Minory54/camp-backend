@@ -1,20 +1,15 @@
 import { db } from "../../prisma/db.js";
-import type {
-  CreateLessonData,
-  UpdateLessonData,
-  LessonsQuery,
-} from "./lessons.schema.js";
+import type { CreateLessonData, UpdateLessonData, LessonsQuery } from "./lessons.schema.js";
 
 export async function findAll(filters: LessonsQuery = {}) {
   let query = db.orm.public.Lessons;
-  if (filters.groupId !== undefined)
-    query = query.where({ id_group: filters.groupId });
+  if (filters.groupId !== undefined) query = query.where({ id_group: filters.groupId });
   return query
     .orderBy([(row) => row.id_group.asc(), (row) => row.position.asc()])
     .include("group")
     .include("theory")
     .include("test")
-    .include("practice")
+    .include("practice", (practice) => practice.select("id", "title", "description", "mdx_source"))
     .all();
 }
 
@@ -23,7 +18,7 @@ export async function findById(id: number) {
     .include("group")
     .include("theory")
     .include("test")
-    .include("practice")
+    .include("practice", (practice) => practice.select("id", "title", "description", "mdx_source"))
     .first();
 }
 

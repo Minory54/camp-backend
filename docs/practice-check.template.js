@@ -46,14 +46,6 @@ function allStyleRules() {
 const htmlFile = findFile("index.html", "html");
 if (!htmlFile) fail("Добавь файл index.html");
 
-// Пример требования к исходному тексту: явный тег <main>.
-// Браузер может создать часть HTML-тегов автоматически, поэтому такие
-// требования нельзя проверять только по document.querySelector(...).
-const sourceWithoutComments = htmlFile.code.replace(/<!--[\s\S]*?-->/g, "");
-if (!/<main(?:\s[^>]*)?>/i.test(sourceWithoutComments)) {
-  fail("Добавь тег main в index.html");
-}
-
 // 2. Проверка построенной страницы. Сначала проверяем наличие элемента.
 const card = document.querySelector(".card");
 if (!card) fail("Добавь элемент с классом card");
@@ -65,5 +57,8 @@ const cardRule = allStyleRules().find((rule) =>
   rule.style.getPropertyValue("display").trim() === "flex"
 );
 if (!cardRule) fail("Задай для .card свойство display: flex");
+if (getComputedStyle(card).display !== "flex") {
+  fail("Проверь, что правило включает display: flex у .card");
+}
 
 // Если код дошёл сюда без исключения, runner вернёт passed: true.

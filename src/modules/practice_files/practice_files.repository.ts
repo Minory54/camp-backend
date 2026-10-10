@@ -13,14 +13,14 @@ export async function findAll(filters: PracticeFilesQuery = {}) {
     query = query.where({ id_code_language: filters.codeLanguageId });
   return query
     .orderBy((row) => row.id.asc())
-    .include("practice")
+    .include("practice", (practice) => practice.select("id", "title", "description", "mdx_source"))
     .include("code_language")
     .all();
 }
 
 export async function findById(id: number) {
   return db.orm.public.Practice_files.where({ id })
-    .include("practice")
+    .include("practice", (practice) => practice.select("id", "title", "description", "mdx_source"))
     .include("code_language")
     .first();
 }

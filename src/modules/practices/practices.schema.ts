@@ -5,7 +5,7 @@ export const PracticeResponseSchema = Type.Object({
   title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
   description: Type.Union([Type.String(), Type.Null()]),
   mdx_source: Type.String({ minLength: 1, pattern: "\\S" }),
-  test_js: Type.String({ minLength: 1, pattern: "\\S" }),
+  //test_js: Type.String({ minLength: 1, pattern: "\\S" }),
   Lessons: Type.Optional(Type.Array(Type.Any())),
   Practice_saves: Type.Optional(Type.Array(Type.Any())),
   Practice_files: Type.Optional(Type.Array(Type.Any())),

@@ -1,4 +1,5 @@
 import { chromium, type Browser } from "playwright";
+import { isFlatPracticeFilename } from "../practice_files/practice-file-name.js";
 
 export type PracticeCheckResult =
   | { status: "passed" }
@@ -24,6 +25,11 @@ export async function runPracticeCheck(
   files: readonly CheckFile[],
   testJs: string,
 ): Promise<PracticeCheckResult> {
+  if (files.some((file) => !isFlatPracticeFilename(file.filename)))
+    return { status: "system_error", error: "Файлы задания должны иметь имена без пути и каталогов" };
+  const main = selectMainHtml(files);
+  if (!main)
+    return { status: "system_error", error: "У задания нет HTML-файла" };
   if (running >= MAX_RUNNING)
     return { status: "system_error", error: "Проверка временно перегружена" };
   running++;
@@ -45,8 +51,6 @@ export async function runPracticeCheck(
         acceptDownloads: false,
       });
       const page = await context.newPage();
-      const main = selectMainHtml(files);
-      const html = main?.code ?? "<!doctype html><html><head></head><body></body></html>";
       const localFiles = new Map(
         files.map((file) => [
           new URL(`/${encodeURIComponent(file.filename)}`, ORIGIN).pathname,
@@ -58,13 +62,13 @@ export async function runPracticeCheck(
         if (url.origin !== ORIGIN) return route.abort();
         const file = localFiles.get(url.pathname);
         if (file && file.language === "css") {
-          return route.fulfill({ status: 200, contentType: "text/css", body: file.code });
+          return route.fulfill({ status: 200, contentType: "text/css; charset=utf-8", body: file.code });
         }
-        if ((file && file.language === "html") || (!main && url.pathname === "/__empty__.html")) {
+        if (file && file.language === "html") {
           return route.fulfill({
             status: 200,
-            contentType: "text/html",
-            body: file?.code ?? html,
+            contentType: "text/html; charset=utf-8",
+            body: file.code,
             headers: {
               "content-security-policy":
                 "default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-eval'; connect-src 'self'; img-src 'none'; form-action 'none'; base-uri 'none'; frame-src 'none'",
@@ -73,25 +77,12 @@ export async function runPracticeCheck(
         }
         return route.abort();
       });
-      const mainPath = main ? `/${encodeURIComponent(main.filename)}` : "/__empty__.html";
+      const mainPath = `/${encodeURIComponent(main.filename)}`;
       await page.goto(`${ORIGIN}${mainPath}`, {
-        waitUntil: "domcontentloaded",
+        // Wait for linked stylesheets and their imports before checking the DOM.
+        waitUntil: "load",
         timeout: TIMEOUT_MS,
       });
-      // Each CSS file is a separate stylesheet in CSSOM, including CSS-only practices.
-      await page.evaluate(
-        (styles) => {
-          for (const style of styles) {
-            const element = document.createElement("style");
-            element.dataset.filename = style.filename;
-            element.textContent = style.code;
-            document.head.appendChild(element);
-          }
-        },
-        files
-          .filter((file) => file.language === "css")
-          .map(({ filename, code }) => ({ filename, code })),
-      );
 
       return page.evaluate(({ source, sourceFiles }): PracticeCheckResult => {
         let test: (sourceFiles: Array<{ filename: string; language: "html" | "css"; code: string }>) => void;

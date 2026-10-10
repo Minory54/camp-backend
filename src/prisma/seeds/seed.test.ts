@@ -1,29 +1,27 @@
 import { db } from "../db.js";
+import { randomBytes, randomInt } from "node:crypto";
+import { access, writeFile } from "node:fs/promises";
+import { hashAccessToken } from "../../modules/students/students.service.js";
 
 const students = [
   {
     display_code: "demo-alisa",
-    recovery_code: "restore-alisa-2026",
     label: "Алиса",
   },
   {
     display_code: "demo-boris",
-    recovery_code: "restore-boris-2026",
     label: "Борис",
   },
   {
     display_code: "demo-vera",
-    recovery_code: "restore-vera-2026",
     label: "Вера",
   },
   {
     display_code: "demo-gleb",
-    recovery_code: "restore-gleb-2026",
     label: "Глеб",
   },
   {
     display_code: "demo-dasha",
-    recovery_code: "restore-dasha-2026",
     label: "Даша",
   },
 ];
@@ -257,7 +255,19 @@ const questions = [
 ];
 
 export async function seedTest() {
+  try {
+    await access(".seed-test-credentials.json");
+    throw new Error("Файл .seed-test-credentials.json уже существует; сохраните его перед повторным seed");
+  } catch (error) {
+    if (!(typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT")) throw error;
+  }
   console.log("Создание тестовых данных...");
+  const credentials: Array<{
+    id_student: string;
+    display_code: string;
+    recovery_code: string;
+    access_token: string;
+  }> = [];
 
   // Базовые записи создаются через seed.base.ts.
   const course = await db.orm.public.Courses.first({ title: "HTML/CSS" });
@@ -284,11 +294,23 @@ export async function seedTest() {
   await db.transaction(async (tx) => {
     // Ученики
     const createdStudents = [];
+    const occupied = new Set(
+      (await tx.orm.public.Students.select("recovery_code").all()).map((row) => row.recovery_code),
+    );
+    const available = Array.from({ length: 10_000 }, (_, number) =>
+      `SDC${String(number).padStart(4, "0")}`,
+    ).filter((code) => !occupied.has(code));
+    if (available.length < students.length) throw new Error("Недостаточно свободных recovery_code");
     for (const student of students) {
-      createdStudents.push(await tx.orm.public.Students.create({
+      const recovery_code = available.splice(randomInt(available.length), 1)[0]!;
+      const access_token = randomBytes(32).toString("base64url");
+      const created = await tx.orm.public.Students.create({
         ...student,
-        access_token: `test-token-${student.display_code}`,
-      }));
+        recovery_code,
+        access_token: hashAccessToken(access_token),
+      });
+      createdStudents.push(created);
+      credentials.push({ id_student: created.id, display_code: student.display_code, recovery_code, access_token });
     }
     console.log("Ученики созданы");
 
@@ -383,6 +405,12 @@ export async function seedTest() {
         practice_completed_at: index < 3 ? completedAt : null,
         test_completed_at: index === 0 ? completedAt : null,
       });
+      if (index === 0) {
+        const questions = await tx.orm.public.Test_questions.where({ id_test: createdTests[index]!.id }).all();
+        for (const question of questions) {
+          await tx.orm.public.Test_answers.create({ id_student: createdStudents[index]!.id, id_question: question.id, is_correct: true });
+        }
+      }
     }
     console.log("Прогресс создан");
 
@@ -400,6 +428,8 @@ export async function seedTest() {
     }
     console.log("Сохранения практики созданы");
   });
+  await writeFile(".seed-test-credentials.json", JSON.stringify(credentials, null, 2), { mode: 0o600, flag: "wx" });
+  console.log("Данные для входа сохранены в .seed-test-credentials.json");
 }
 
 try {

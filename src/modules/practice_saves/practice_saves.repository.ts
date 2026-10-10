@@ -14,14 +14,14 @@ export async function findAll(filters: PracticeSavesQuery = {}) {
   return query
     .orderBy((row) => row.id.asc())
     .include("student", (student) => student.select("id", "display_code", "label", "created_at", "updated_at"))
-    .include("practice")
+    .include("practice", (practice) => practice.select("id", "title", "description", "mdx_source"))
     .all();
 }
 
 export async function findById(id: number) {
   return db.orm.public.Practice_saves.where({ id })
     .include("student", (student) => student.select("id", "display_code", "label", "created_at", "updated_at"))
-    .include("practice")
+    .include("practice", (practice) => practice.select("id", "title", "description", "mdx_source"))
     .first();
 }
 
