@@ -14,14 +14,14 @@ import * as service from "./tests.service.js";
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/",
-    { schema: { tags: ["Technology"], response: { 200: Type.Array(TestResponseSchema) } } },
+    { schema: { tags: ["Test"], response: { 200: Type.Array(TestResponseSchema) } } },
     async () => service.getTests(),
   );
 
   fastify.get(
     "/:id",
     {
-      schema: { tags: ["Technology"], params: TestIdSchema, response: { 200: TestResponseSchema } },
+      schema: { tags: ["Test"], params: TestIdSchema, response: { 200: TestResponseSchema } },
     },
     async (request) => service.getTestById(request.params.id),
   );
@@ -31,7 +31,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
-        tags: ["Technology"],
+        tags: ["Test"],
         body: CheckAnswerSchema,
         response: { 200: CheckAnswerResponseSchema },
       },
@@ -47,7 +47,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
-        tags: ["Technology"],
+        tags: ["Test"],
         params: TestIdSchema,
         response: {
           200: Type.Array(
@@ -66,7 +66,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
-        tags: ["Technology"],
+        tags: ["Test"],
         body: CreateTestSchema,
         response: { 201: TestResponseSchema },
       },
@@ -81,7 +81,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
-        tags: ["Technology"],
+        tags: ["Test"],
         params: TestIdSchema,
         body: UpdateTestSchema,
         response: { 200: TestResponseSchema },
@@ -92,7 +92,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Technology"], params: TestIdSchema } },
+    { schema: { tags: ["Test"], params: TestIdSchema } },
     async (request, reply) => {
       await service.deleteTest(request.params.id);
       return reply.code(204).send();
