@@ -10,7 +10,7 @@ export async function findAll() {
 }
 
 export async function findById(id: number) {
-  return db.orm.public.Courses.where({ id })
+  const course = await db.orm.public.Courses.where({ id })
     .include("Groups", (groups) =>
       groups
         .orderBy((group) => group.position.asc())
@@ -27,6 +27,14 @@ export async function findById(id: number) {
         ),
     )
     .first();
+  if (course === null) return null;
+  return {
+    ...course,
+    Groups: course.Groups.filter((group) => group.state !== "hidden").map((group) => ({
+      ...group,
+      Lessons: group.Lessons.filter((lesson) => !lesson.is_hidden),
+    })),
+  };
 }
 
 export async function findProgress(courseId: number, studentId: string) {
@@ -54,8 +62,8 @@ export async function findProgress(courseId: number, studentId: string) {
   // Первый урок доступен. Каждый следующий требует завершения всех предыдущих.
   let previousLessonsCompleted = true;
 
-  const lessons = course.Groups.flatMap((group) =>
-    group.Lessons.map((lesson) => {
+  const lessons = course.Groups.filter((group) => group.state !== "hidden").flatMap((group) =>
+    group.Lessons.filter((lesson) => !lesson.is_hidden).map((lesson) => {
       // По модели для пары «ученик + урок» возможна только одна запись.
       const progress = lesson.Lesson_progress[0];
 

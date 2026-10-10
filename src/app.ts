@@ -17,6 +17,7 @@ import saveFilesRoutes from "./modules/save_files/save_files.routes.js";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import cors from "@fastify/cors";
+import databasePlugin from "./plugins/database.plugin.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -24,6 +25,8 @@ export async function buildApp() {
     ajv: { customOptions: { removeAdditional: false } },
   });
   app.decorateRequest("studentId", "");
+
+  await app.register(databasePlugin);
 
   await app.register(swagger, {
     openapi: {
