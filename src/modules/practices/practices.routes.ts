@@ -18,6 +18,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
       onRequest: requireStudent,
       schema: {
         tags: ["Practice"],
+        summary: "Проверка решения практического задания",
         body: CheckPracticeSchema,
         response: { 200: CheckPracticeResponseSchema },
       },
@@ -29,7 +30,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   );
   fastify.get(
     "/",
-    { schema: { tags: ["Practice"], response: { 200: Type.Array(PracticeResponseSchema) } } },
+    { schema: { tags: ["Practice"], summary: "Получение списка практических заданий", response: { 200: Type.Array(PracticeResponseSchema) } } },
     async () => service.getPractices(),
   );
 
@@ -38,6 +39,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Practice"],
+        summary: "Получение практического задания по id",
         params: PracticeIdSchema,
         response: { 200: PracticeResponseSchema },
       },
@@ -50,6 +52,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Practice"],
+        summary: "Добавление практического задания",
         body: CreatePracticeSchema,
         response: { 201: PracticeResponseSchema },
       },
@@ -65,6 +68,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Practice"],
+        summary: "Редактирование практического задания",
         params: PracticeIdSchema,
         body: UpdatePracticeSchema,
         response: { 200: PracticeResponseSchema },
@@ -75,7 +79,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Practice"], params: PracticeIdSchema } },
+    { schema: { tags: ["Practice"], summary: "Удаление практического задания", params: PracticeIdSchema } },
     async (request, reply) => {
       await service.deletePractice(request.params.id);
       return reply.code(204).send();

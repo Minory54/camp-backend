@@ -27,6 +27,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Lesson progress"],
+        summary: "Получение списка записей прогресса по урокам",
         querystring: LessonProgressFilterSchema,
         response: { 200: Type.Array(LessonProgressResponseSchema) },
       },
@@ -40,6 +41,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Lesson progress"],
+        summary: "Получение записи прогресса по уроку по id",
         params: LessonProgressIdSchema,
         response: { 200: LessonProgressResponseSchema },
       },
@@ -52,6 +54,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Lesson progress"],
+        summary: "Добавление записи прогресса по уроку",
         body: CreateLessonProgressSchema,
         response: { 201: LessonProgressResponseSchema },
       },
@@ -76,7 +79,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Lesson progress"], params: LessonProgressIdSchema } },
+    { schema: { tags: ["Lesson progress"], summary: "Удаление записи прогресса по уроку", params: LessonProgressIdSchema } },
     async (request, reply) => {
       await service.deleteLessonProgress(request.params.id);
       return reply.code(204).send();

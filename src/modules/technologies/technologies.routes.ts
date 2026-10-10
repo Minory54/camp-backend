@@ -11,7 +11,7 @@ import * as service from "./technologies.service.js";
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/",
-    { schema: { tags: ["Technology"], response: { 200: Type.Array(TechnologyResponseSchema) } } },
+    { schema: { tags: ["Technology"], summary: "Получение списка технологий", response: { 200: Type.Array(TechnologyResponseSchema) } } },
     async () => service.getTechnologies(),
   );
 
@@ -20,6 +20,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Technology"],
+        summary: "Получение технологии по id",
         params: TechnologyIdSchema,
         response: { 200: TechnologyResponseSchema },
       },
@@ -32,6 +33,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Technology"],
+        summary: "Добавление технологии",
         body: CreateTechnologySchema,
         response: { 201: TechnologyResponseSchema },
       },
@@ -47,6 +49,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Technology"],
+        summary: "Редактирование технологии",
         params: TechnologyIdSchema,
         body: UpdateTechnologySchema,
         response: { 200: TechnologyResponseSchema },
@@ -57,7 +60,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Technology"], params: TechnologyIdSchema } },
+    { schema: { tags: ["Technology"], summary: "Удаление технологии", params: TechnologyIdSchema } },
     async (request, reply) => {
       await service.deleteTechnology(request.params.id);
       return reply.code(204).send();

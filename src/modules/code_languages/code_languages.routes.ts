@@ -9,24 +9,24 @@ import {
 import * as service from "./code_languages.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
-  // ПОЛУЧЕНИЕ ВСЕХ ЗАПИСЕЙ
   fastify.get(
     "/",
     {
       schema: {
         tags: ["Code language"],
+        summary: "Получение полного списка языков программирования",
         response: { 200: Type.Array(CodeLanguageResponseSchema) },
       },
     },
     async () => service.getCodeLanguages(),
   );
 
-  // ПОЛУЧЕНИЕ ЗАПИСИ ПО КОНКРЕТНОМУ ID
   fastify.get(
     "/:id",
     {
       schema: {
         tags: ["Code language"],
+        summary: "Получение языка программирования по id",
         params: CodeLanguageIdSchema,
         response: { 200: CodeLanguageResponseSchema },
       },
@@ -34,12 +34,12 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.getCodeLanguageById(request.params.id),
   );
 
-  // СОЗДАНИЕ НОВОЙ ЗАПИСИ
   fastify.post(
     "/",
     {
       schema: {
         tags: ["Code language"],
+        summary: "Добавление языка программирования",
         body: CreateCodeLanguageSchema,
         response: { 201: CodeLanguageResponseSchema },
       },
@@ -50,12 +50,12 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
   );
 
-  // РЕДАКТИРОВАНИЕ ЗАПИСИ
   fastify.patch(
     "/:id",
     {
       schema: {
         tags: ["Code language"],
+        summary: "Редактирование языка программирования",
         params: CodeLanguageIdSchema,
         body: UpdateCodeLanguageSchema,
         response: { 200: CodeLanguageResponseSchema },
@@ -64,10 +64,9 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updateCodeLanguage(request.params.id, request.body),
   );
 
-  // УДАЛЕНИЕ ЗАПИСИ
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Code language"], params: CodeLanguageIdSchema } },
+    { schema: { tags: ["Code language"],summary: "Удаление языка программирования", params: CodeLanguageIdSchema } },
     async (request, reply) => {
       await service.deleteCodeLanguage(request.params.id);
       return reply.code(204).send();

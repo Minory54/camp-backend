@@ -19,6 +19,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
       onRequest: requireStudent,
       schema: {
         tags: ["Lesson"],
+        summary: "Отметка открытия теории урока",
         params: LessonIdSchema,
         body: Type.Object({}, { additionalProperties: false }),
         response: { 200: LessonProgressResponseSchema },
@@ -31,6 +32,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Lesson"],
+        summary: "Получение списка уроков",
         querystring: LessonsFilterSchema,
         response: { 200: Type.Array(LessonResponseSchema) },
       },
@@ -41,7 +43,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/:id",
     {
-      schema: { tags: ["Lesson"], params: LessonIdSchema, response: { 200: LessonResponseSchema } },
+      schema: { tags: ["Lesson"], summary: "Получение урока по id", params: LessonIdSchema, response: { 200: LessonResponseSchema } },
     },
     async (request) => service.getLessonById(request.params.id),
   );
@@ -51,6 +53,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Lesson"],
+        summary: "Добавление урока",
         body: CreateLessonSchema,
         response: { 201: LessonResponseSchema },
       },
@@ -66,6 +69,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       schema: {
         tags: ["Lesson"],
+        summary: "Редактирование урока",
         params: LessonIdSchema,
         body: UpdateLessonSchema,
         response: { 200: LessonResponseSchema },
@@ -76,7 +80,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Lesson"], params: LessonIdSchema } },
+    { schema: { tags: ["Lesson"], summary: "Удаление урока", params: LessonIdSchema } },
     async (request, reply) => {
       await service.deleteLesson(request.params.id);
       return reply.code(204).send();

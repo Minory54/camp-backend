@@ -24,6 +24,7 @@ const theoriesRoutes: FastifyPluginAsync = async (app) => {
     {
       schema: {
         tags: ["Theory"],
+        summary: "Получение списка теоретических материалов",
         querystring: TheoriesFilterSchema,
         response: {
           200: Type.Array(TheoryResponseSchema),
@@ -44,6 +45,7 @@ const theoriesRoutes: FastifyPluginAsync = async (app) => {
     {
       schema: {
         tags: ["Theory"],
+        summary: "Получение теоретического материала по id",
         params: TheoryIdSchema,
 
         response: {
@@ -65,6 +67,7 @@ const theoriesRoutes: FastifyPluginAsync = async (app) => {
     {
       schema: {
         tags: ["Theory"],
+        summary: "Добавление теоретического материала",
         body: CreateTheorySchema,
 
         response: {
@@ -86,6 +89,7 @@ const theoriesRoutes: FastifyPluginAsync = async (app) => {
     {
       schema: {
         tags: ["Theory"],
+        summary: "Редактирование теоретического материала",
         params: TheoryIdSchema,
         body: UpdateTheorySchema,
 
@@ -106,7 +110,7 @@ const theoriesRoutes: FastifyPluginAsync = async (app) => {
   fastify.delete(
     "/:id",
     {
-      schema: { tags: ["Theory"], params: TheoryIdSchema },
+      schema: { tags: ["Theory"], summary: "Удаление теоретического материала", params: TheoryIdSchema },
     },
     async (request, reply) => {
       const { id } = request.params;

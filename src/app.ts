@@ -39,6 +39,10 @@ export async function buildApp() {
 
   await app.register(swaggerUi, {
     routePrefix: "/docs",
+    uiConfig: {
+      docExpansion: "none",
+      displayRequestDuration: true,
+    },
   });
 
   await app.register(cors, {
