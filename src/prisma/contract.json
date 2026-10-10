@@ -52,6 +52,10 @@
       "model": "Technologies",
       "namespace": "public"
     },
+    "test_answers": {
+      "model": "Test_answers",
+      "namespace": "public"
+    },
     "test_questions": {
       "model": "Test_questions",
       "namespace": "public"
@@ -1163,6 +1167,21 @@
                   "model": "Practice_saves",
                   "namespace": "public"
                 }
+              },
+              "Test_answers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "id_student"
+                  ]
+                },
+                "to": {
+                  "model": "Test_answers",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -1238,6 +1257,90 @@
               },
               "namespaceId": "public",
               "table": "technologies"
+            }
+          },
+          "Test_answers": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id_question": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id_student": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "is_correct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "question": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "id_question"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Test_questions",
+                  "namespace": "public"
+                }
+              },
+              "student": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "id_student"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Students",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "id_question": {
+                  "column": "id_question"
+                },
+                "id_student": {
+                  "column": "id_student"
+                },
+                "is_correct": {
+                  "column": "is_correct"
+                }
+              },
+              "namespaceId": "public",
+              "table": "test_answers"
             }
           },
           "Test_questions": {
@@ -1318,6 +1421,21 @@
                 },
                 "to": {
                   "model": "Question_options",
+                  "namespace": "public"
+                }
+              },
+              "Test_answers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "id_question"
+                  ]
+                },
+                "to": {
+                  "model": "Test_answers",
                   "namespace": "public"
                 }
               },
@@ -2556,6 +2674,106 @@
                 }
               ]
             },
+            "test_answers": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id_question": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id_student": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "is_correct": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "id_student"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "test_answers"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "students"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "id_question"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "test_answers"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "test_questions"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "id_student"
+                  ],
+                  "name": "test_answers_id_student_idx_d8b13a38",
+                  "prefix": "test_answers_id_student_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "id_question"
+                  ],
+                  "name": "test_answers_question_idx_c008a217",
+                  "prefix": "test_answers_question_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "id_student",
+                    "id_question"
+                  ],
+                  "name": "test_answers_student_question_key"
+                }
+              ]
+            },
             "test_questions": {
               "checks": [
                 {
@@ -2836,7 +3054,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "1c728052d96802086884d9a51cfc1e83bd5f6a03c861fd97913e5d792c223eb2"
+    "storageHash": "b9eff4df235dda12af0f98eedf7392b657f60ec73017d265ab3dfb1e8f560353"
   },
   "execution": {
     "executionHash": "3a2dad1363db3b13b756c09450195efc78bddff6db64336aea94006993731728",

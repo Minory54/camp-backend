@@ -45,6 +45,7 @@ model Students {
   //Student_sessions Student_sessions[]
   Lesson_progress Lesson_progress[]
   Practice_saves  Practice_saves[]
+  Test_answers    Test_answers[]
 }
 
 // 4
@@ -149,6 +150,7 @@ model Test_questions {
   code_language    Code_languages?    @relation(fields:[id_code_language], references:[id], onDelete: Restrict)
 
   Question_options Question_options[]
+  Test_answers     Test_answers[]
 
   @@unique([id_test, position], map: "test_questions_position_key")
   @@check(expression: "position >= 1", name: "questions_positive_position")
@@ -166,6 +168,20 @@ model Question_options {
 
   @@unique([id_question, position], map: "question_options_position_key")
   @@check(expression: "position >= 1", name: "options_positive_position")
+}
+
+// One result per student and question; a correct answer stays correct.
+model Test_answers {
+  id          Int            @id @default(autoincrement())
+  id_student  Uuid
+  id_question Int
+  is_correct  Boolean        @default(false)
+
+  student     Students       @relation(fields:[id_student], references:[id], onDelete: Cascade)
+  question    Test_questions @relation(fields:[id_question], references:[id], onDelete: Cascade)
+
+  @@unique([id_student, id_question], map: "test_answers_student_question_key")
+  @@index([id_question], name: "test_answers_question_idx")
 }
 
 // 12
