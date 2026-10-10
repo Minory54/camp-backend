@@ -34,6 +34,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Save file"],
         querystring: SaveFilesFilterSchema,
         response: { 200: Type.Array(SaveFileResponseSchema) },
       },
@@ -43,13 +44,25 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get(
     "/:id",
-    { schema: { params: SaveFileIdSchema, response: { 200: SaveFileResponseSchema } } },
+    {
+      schema: {
+        tags: ["Save file"],
+        params: SaveFileIdSchema,
+        response: { 200: SaveFileResponseSchema },
+      },
+    },
     async (request) => service.getSaveFileById(request.params.id),
   );
 
   fastify.post(
     "/",
-    { schema: { body: CreateSaveFileSchema, response: { 201: SaveFileResponseSchema } } },
+    {
+      schema: {
+        tags: ["Save file"],
+        body: CreateSaveFileSchema,
+        response: { 201: SaveFileResponseSchema },
+      },
+    },
     async (request, reply) => {
       const result = await service.createSaveFile(request.body);
       return reply.code(201).send(result);
@@ -60,6 +73,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Save file"],
         params: SaveFileIdSchema,
         body: UpdateSaveFileSchema,
         response: { 200: SaveFileResponseSchema },
@@ -68,10 +82,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updateSaveFile(request.params.id, request.body),
   );
 
-  fastify.delete("/:id", { schema: { params: SaveFileIdSchema } }, async (request, reply) => {
-    await service.deleteSaveFile(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Save file"], params: SaveFileIdSchema } },
+    async (request, reply) => {
+      await service.deleteSaveFile(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

@@ -5,20 +5,23 @@ import {
   CourseIdSchema,
   CreateCourseSchema,
   UpdateCourseSchema,
-  CourseProgressResponseSchema
+  CourseProgressResponseSchema,
 } from "./courses.schema.js";
 import { requireStudent, assertStudentOwner } from "../students/students.service.js";
 import * as service from "./courses.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
-  fastify.get("/", { schema: { response: { 200: Type.Array(CourseResponseSchema) } } }, async () =>
-    service.getCourses(),
+  fastify.get(
+    "/",
+    { schema: { tags: ["Course"], response: { 200: Type.Array(CourseResponseSchema) } } },
+    async () => service.getCourses(),
   );
 
   fastify.get(
     "/:id",
     {
       schema: {
+        tags: ["Course"],
         params: CourseIdSchema,
         response: { 200: CourseResponseSchema },
       },
@@ -27,34 +30,33 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   );
 
   fastify.get(
-  "/:id/progress",
-  {
-    onRequest: requireStudent,
-    schema: {
-      params: CourseIdSchema,
-      querystring: Type.Object({
-        studentId: Type.Optional(Type.String({ format: "uuid" })),
-      }),
-      response: {
-        200: CourseProgressResponseSchema,
+    "/:id/progress",
+    {
+      onRequest: requireStudent,
+      schema: {
+        tags: ["Course"],
+        params: CourseIdSchema,
+        querystring: Type.Object({
+          studentId: Type.Optional(Type.String({ format: "uuid" })),
+        }),
+        response: {
+          200: CourseProgressResponseSchema,
+        },
       },
     },
-  },
-  async (request, reply) => {
-    if (request.query.studentId !== undefined)
-      assertStudentOwner(request, request.query.studentId);
+    async (request, reply) => {
+      if (request.query.studentId !== undefined)
+        assertStudentOwner(request, request.query.studentId);
 
-    return service.getCourseProgress(
-      request.params.id,
-      request.studentId,
-    );
-  },
-);
+      return service.getCourseProgress(request.params.id, request.studentId);
+    },
+  );
 
   fastify.post(
     "/",
     {
       schema: {
+        tags: ["Course"],
         body: CreateCourseSchema,
         response: { 201: CourseResponseSchema },
       },
@@ -69,6 +71,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Course"],
         params: CourseIdSchema,
         body: UpdateCourseSchema,
         response: { 200: CourseResponseSchema },
@@ -77,10 +80,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updateCourse(request.params.id, request.body),
   );
 
-  fastify.delete("/:id", { schema: { params: CourseIdSchema } }, async (request, reply) => {
-    await service.deleteCourse(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Course"], params: CourseIdSchema } },
+    async (request, reply) => {
+      await service.deleteCourse(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

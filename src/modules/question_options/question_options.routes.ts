@@ -14,6 +14,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Question option"],
         querystring: QuestionOptionsFilterSchema,
         response: { 200: Type.Array(QuestionOptionResponseSchema) },
       },
@@ -23,14 +24,24 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get(
     "/:id",
-    { schema: { params: QuestionOptionIdSchema, response: { 200: QuestionOptionResponseSchema } } },
+    {
+      schema: {
+        tags: ["Question option"],
+        params: QuestionOptionIdSchema,
+        response: { 200: QuestionOptionResponseSchema },
+      },
+    },
     async (request) => service.getQuestionOptionById(request.params.id),
   );
 
   fastify.post(
     "/",
     {
-      schema: { body: CreateQuestionOptionSchema, response: { 201: QuestionOptionResponseSchema } },
+      schema: {
+        tags: ["Question option"],
+        body: CreateQuestionOptionSchema,
+        response: { 201: QuestionOptionResponseSchema },
+      },
     },
     async (request, reply) => {
       const result = await service.createQuestionOption(request.body);
@@ -42,6 +53,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Question option"],
         params: QuestionOptionIdSchema,
         body: UpdateQuestionOptionSchema,
         response: { 200: QuestionOptionResponseSchema },
@@ -50,10 +62,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updateQuestionOption(request.params.id, request.body),
   );
 
-  fastify.delete("/:id", { schema: { params: QuestionOptionIdSchema } }, async (request, reply) => {
-    await service.deleteQuestionOption(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Question option"], params: QuestionOptionIdSchema } },
+    async (request, reply) => {
+      await service.deleteQuestionOption(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

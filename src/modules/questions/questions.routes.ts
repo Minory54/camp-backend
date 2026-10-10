@@ -14,6 +14,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Question"],
         querystring: QuestionsFilterSchema,
         response: { 200: Type.Array(QuestionResponseSchema) },
       },
@@ -23,13 +24,25 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get(
     "/:id",
-    { schema: { params: QuestionIdSchema, response: { 200: QuestionResponseSchema } } },
+    {
+      schema: {
+        tags: ["Question"],
+        params: QuestionIdSchema,
+        response: { 200: QuestionResponseSchema },
+      },
+    },
     async (request) => service.getQuestionById(request.params.id),
   );
 
   fastify.post(
     "/",
-    { schema: { body: CreateQuestionSchema, response: { 201: QuestionResponseSchema } } },
+    {
+      schema: {
+        tags: ["Question"],
+        body: CreateQuestionSchema,
+        response: { 201: QuestionResponseSchema },
+      },
+    },
     async (request, reply) => {
       const result = await service.createQuestion(request.body);
       return reply.code(201).send(result);
@@ -40,6 +53,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Question"],
         params: QuestionIdSchema,
         body: UpdateQuestionSchema,
         response: { 200: QuestionResponseSchema },
@@ -48,10 +62,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updateQuestion(request.params.id, request.body),
   );
 
-  fastify.delete("/:id", { schema: { params: QuestionIdSchema } }, async (request, reply) => {
-    await service.deleteQuestion(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Question"], params: QuestionIdSchema } },
+    async (request, reply) => {
+      await service.deleteQuestion(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

@@ -14,6 +14,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Code language"],
         response: { 200: Type.Array(CodeLanguageResponseSchema) },
       },
     },
@@ -25,6 +26,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Code language"],
         params: CodeLanguageIdSchema,
         response: { 200: CodeLanguageResponseSchema },
       },
@@ -37,6 +39,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Code language"],
         body: CreateCodeLanguageSchema,
         response: { 201: CodeLanguageResponseSchema },
       },
@@ -52,6 +55,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Code language"],
         params: CodeLanguageIdSchema,
         body: UpdateCodeLanguageSchema,
         response: { 200: CodeLanguageResponseSchema },
@@ -61,10 +65,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   );
 
   // УДАЛЕНИЕ ЗАПИСИ
-  fastify.delete("/:id", { schema: { params: CodeLanguageIdSchema } }, async (request, reply) => {
-    await service.deleteCodeLanguage(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Code language"], params: CodeLanguageIdSchema } },
+    async (request, reply) => {
+      await service.deleteCodeLanguage(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

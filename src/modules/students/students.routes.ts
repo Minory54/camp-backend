@@ -20,7 +20,11 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
     "/",
     {
-      schema: { body: CreateStudentSchema, response: { 201: StudentRegistrationResponseSchema } },
+      schema: {
+        tags: ["Student"],
+        body: CreateStudentSchema,
+        response: { 201: StudentRegistrationResponseSchema },
+      },
     },
     async (request, reply) => {
       reply.header("Cache-Control", "private, no-store");
@@ -31,7 +35,11 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
     "/recover",
     {
-      schema: { body: RecoverStudentSchema, response: { 200: StudentAccessResponseSchema } },
+      schema: {
+        tags: ["Student"],
+        body: RecoverStudentSchema,
+        response: { 200: StudentAccessResponseSchema },
+      },
     },
     async (request, reply) => {
       reply.header("Cache-Control", "private, no-store");
@@ -43,7 +51,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/me",
     {
       onRequest: service.requireStudent,
-      schema: { response: { 200: StudentResponseSchema } },
+      schema: { tags: ["Student"], response: { 200: StudentResponseSchema } },
     },
     async (request) => service.getStudentById(request.studentId),
   );
@@ -52,7 +60,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       onRequest: service.requireStudent,
-      schema: { response: { 200: Type.Array(StudentResponseSchema) } },
+      schema: { tags: ["Student"], response: { 200: Type.Array(StudentResponseSchema) } },
     },
     async (request) => [await service.getStudentById(request.studentId)],
   );
@@ -61,7 +69,11 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       onRequest: service.requireStudent,
-      schema: { params: StudentIdSchema, response: { 200: StudentResponseSchema } },
+      schema: {
+        tags: ["Student"],
+        params: StudentIdSchema,
+        response: { 200: StudentResponseSchema },
+      },
     },
     async (request) => {
       service.assertStudentOwner(request, request.params.id);
@@ -74,6 +86,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: service.requireStudent,
       schema: {
+        tags: ["Student"],
         params: StudentIdSchema,
         body: UpdateStudentSchema,
         response: { 200: StudentResponseSchema },
@@ -89,7 +102,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       onRequest: service.requireStudent,
-      schema: { params: StudentIdSchema },
+      schema: { tags: ["Student"], params: StudentIdSchema },
     },
     async (request, reply) => {
       service.assertStudentOwner(request, request.params.id);

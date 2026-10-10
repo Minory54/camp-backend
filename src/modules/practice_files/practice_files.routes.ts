@@ -14,6 +14,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Practice file"],
         querystring: PracticeFilesFilterSchema,
         response: { 200: Type.Array(PracticeFileResponseSchema) },
       },
@@ -23,13 +24,25 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get(
     "/:id",
-    { schema: { params: PracticeFileIdSchema, response: { 200: PracticeFileResponseSchema } } },
+    {
+      schema: {
+        tags: ["Practice file"],
+        params: PracticeFileIdSchema,
+        response: { 200: PracticeFileResponseSchema },
+      },
+    },
     async (request) => service.getPracticeFileById(request.params.id),
   );
 
   fastify.post(
     "/",
-    { schema: { body: CreatePracticeFileSchema, response: { 201: PracticeFileResponseSchema } } },
+    {
+      schema: {
+        tags: ["Practice file"],
+        body: CreatePracticeFileSchema,
+        response: { 201: PracticeFileResponseSchema },
+      },
+    },
     async (request, reply) => {
       const result = await service.createPracticeFile(request.body);
       return reply.code(201).send(result);
@@ -40,6 +53,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Practice file"],
         params: PracticeFileIdSchema,
         body: UpdatePracticeFileSchema,
         response: { 200: PracticeFileResponseSchema },
@@ -48,10 +62,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updatePracticeFile(request.params.id, request.body),
   );
 
-  fastify.delete("/:id", { schema: { params: PracticeFileIdSchema } }, async (request, reply) => {
-    await service.deletePracticeFile(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Practice file"], params: PracticeFileIdSchema } },
+    async (request, reply) => {
+      await service.deletePracticeFile(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

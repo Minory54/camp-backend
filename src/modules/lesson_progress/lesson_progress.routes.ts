@@ -26,17 +26,20 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Lesson progress"],
         querystring: LessonProgressFilterSchema,
         response: { 200: Type.Array(LessonProgressResponseSchema) },
       },
     },
-    async (request) => service.getLessonProgress({ ...request.query, studentId: request.studentId }),
+    async (request) =>
+      service.getLessonProgress({ ...request.query, studentId: request.studentId }),
   );
 
   fastify.get(
     "/:id",
     {
       schema: {
+        tags: ["Lesson progress"],
         params: LessonProgressIdSchema,
         response: { 200: LessonProgressResponseSchema },
       },
@@ -48,6 +51,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Lesson progress"],
         body: CreateLessonProgressSchema,
         response: { 201: LessonProgressResponseSchema },
       },
@@ -70,10 +74,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   //   async (request) => service.updateLessonProgress(request.params.id, request.body),
   // );
 
-  fastify.delete("/:id", { schema: { params: LessonProgressIdSchema } }, async (request, reply) => {
-    await service.deleteLessonProgress(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Lesson progress"], params: LessonProgressIdSchema } },
+    async (request, reply) => {
+      await service.deleteLessonProgress(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

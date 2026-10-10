@@ -12,13 +12,17 @@ import { requireStudent, assertStudentOwner } from "../students/students.service
 import * as service from "./tests.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
-  fastify.get("/", { schema: { response: { 200: Type.Array(TestResponseSchema) } } }, async () =>
-    service.getTests(),
+  fastify.get(
+    "/",
+    { schema: { tags: ["Technology"], response: { 200: Type.Array(TestResponseSchema) } } },
+    async () => service.getTests(),
   );
 
   fastify.get(
     "/:id",
-    { schema: { params: TestIdSchema, response: { 200: TestResponseSchema } } },
+    {
+      schema: { tags: ["Technology"], params: TestIdSchema, response: { 200: TestResponseSchema } },
+    },
     async (request) => service.getTestById(request.params.id),
   );
 
@@ -27,6 +31,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
+        tags: ["Technology"],
         body: CheckAnswerSchema,
         response: { 200: CheckAnswerResponseSchema },
       },
@@ -37,9 +42,35 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
   );
 
+  fastify.get(
+    "/:id/answers",
+    {
+      onRequest: requireStudent,
+      schema: {
+        tags: ["Technology"],
+        params: TestIdSchema,
+        response: {
+          200: Type.Array(
+            Type.Object({
+              id_question: Type.Integer(),
+              is_correct: Type.Boolean(),
+            }),
+          ),
+        },
+      },
+    },
+    async (request) => service.getTestAnswers(request.params.id, request.studentId),
+  );
+
   fastify.post(
     "/",
-    { schema: { body: CreateTestSchema, response: { 201: TestResponseSchema } } },
+    {
+      schema: {
+        tags: ["Technology"],
+        body: CreateTestSchema,
+        response: { 201: TestResponseSchema },
+      },
+    },
     async (request, reply) => {
       const result = await service.createTest(request.body);
       return reply.code(201).send(result);
@@ -50,6 +81,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Technology"],
         params: TestIdSchema,
         body: UpdateTestSchema,
         response: { 200: TestResponseSchema },
@@ -58,10 +90,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request) => service.updateTest(request.params.id, request.body),
   );
 
-  fastify.delete("/:id", { schema: { params: TestIdSchema } }, async (request, reply) => {
-    await service.deleteTest(request.params.id);
-    return reply.code(204).send();
-  });
+  fastify.delete(
+    "/:id",
+    { schema: { tags: ["Technology"], params: TestIdSchema } },
+    async (request, reply) => {
+      await service.deleteTest(request.params.id);
+      return reply.code(204).send();
+    },
+  );
 };
 
 export default routes;

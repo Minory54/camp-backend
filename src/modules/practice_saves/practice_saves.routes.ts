@@ -27,6 +27,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        tags: ["Practice save"],
         querystring: PracticeSavesFilterSchema,
         response: { 200: Type.Array(PracticeSaveResponseSchema) },
       },
@@ -36,14 +37,24 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get(
     "/:id",
-    { schema: { params: PracticeSaveIdSchema, response: { 200: PracticeSaveResponseSchema } } },
+    {
+      schema: {
+        tags: ["Practice save"],
+        params: PracticeSaveIdSchema,
+        response: { 200: PracticeSaveResponseSchema },
+      },
+    },
     async (request) => service.getPracticeSaveById(request.params.id),
   );
 
   fastify.post(
     "/",
     {
-      schema: { body: CreatePracticeSaveSchema, response: { 201: PracticeSaveResponseSchema } },
+      schema: {
+        tags: ["Practice save"],
+        body: CreatePracticeSaveSchema,
+        response: { 201: PracticeSaveResponseSchema },
+      },
     },
     async (request, reply) => {
       const result = await service.createPracticeSave(request.body);
@@ -55,6 +66,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        tags: ["Practice save"],
         params: PracticeSaveIdSchema,
         body: UpdatePracticeSaveSchema,
         response: { 200: PracticeSaveResponseSchema },
@@ -65,7 +77,12 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { params: PracticeSaveIdSchema } },
+    {
+      schema: {
+        tags: ["Practice save"],
+        params: PracticeSaveIdSchema,
+      },
+    },
     async (request, reply) => {
       await service.deletePracticeSave(request.params.id);
       return reply.code(204).send();
