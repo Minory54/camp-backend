@@ -1,7 +1,6 @@
 // tests.service.ts
 
 import { ResponseError } from "../../common/errors/response.error.js";
-import { createLessonProgress } from "../lesson_progress/lesson_progress.service.js";
 import * as repository from "./tests.repository.js";
 import type { CheckAnswerData, CreateTestData, UpdateTestData } from "./tests.schema.js";
 
@@ -36,23 +35,25 @@ export async function checkAnswer(data: CheckAnswerData) {
 
   const isCorrect =
     selectedIds.size === correctIds.size && [...selectedIds].every((id) => correctIds.has(id));
-  if (!isCorrect) return { is_correct: false, is_test_completed: false, message: "Ответ неверный" };
-
-  const lastQuestion = await repository.findLastQuestion(question.id_test);
-  if (lastQuestion === null) throw new ResponseError(404, "Вопросы теста не найдены");
-  if (lastQuestion.id !== question.id) return { is_correct: true, is_test_completed: false };
-
   const lessons = await repository.findLessonsByTest(question.id_test);
   if (lessons.length === 0) throw new ResponseError(404, "Урок для теста не найден");
   if (lessons.length > 1) throw new ResponseError(409, "Тест привязан к нескольким урокам");
 
   const lesson = lessons[0]!;
-  let progress = await repository.findLessonProgress(data.id_student, lesson.id);
-  const body = { id_student: data.id_student, id_lesson: lesson.id };
-  if (progress === null) progress = await createLessonProgress(body);
-  if (progress.test_completed_at === null)
-    await repository.completeTest(data.id_student, lesson.id, new Date().toISOString());
-  return { is_correct: true, is_test_completed: true };
+  const completed = await repository.recordAnswer(
+    data.id_student,
+    question.id,
+    question.id_test,
+    lesson.id,
+    isCorrect,
+  );
+  if (!isCorrect) throw new ResponseError(400, "Упс, не верно");
+  return { is_correct: true, is_test_completed: completed };
+}
+
+export async function getTestAnswers(testId: number, studentId: string) {
+  await getTestById(testId);
+  return repository.findAnswers(testId, studentId);
 }
 
 export async function createTest(data: CreateTestData) {

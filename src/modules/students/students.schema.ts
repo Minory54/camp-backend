@@ -10,9 +10,12 @@ export const StudentResponseSchema = Type.Object({
   Practice_saves: Type.Optional(Type.Array(Type.Any())),
 });
 
-export const StudentIdSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
-}, { additionalProperties: false });
+export const StudentIdSchema = Type.Object(
+  {
+    id: Type.String({ format: "uuid" }),
+  },
+  { additionalProperties: false },
+);
 
 export const CreateStudentSchema = Type.Object(
   {

@@ -8,7 +8,6 @@ export const PracticeFileResponseSchema = Type.Object({
   filename: Type.String({ minLength: 1, pattern: "\\S" }),
   practice: Type.Optional(Type.Any()),
   code_language: Type.Optional(Type.Any()),
-  Save_files: Type.Optional(Type.Array(Type.Any())),
 });
 
 export const PracticeFileIdSchema = Type.Object({

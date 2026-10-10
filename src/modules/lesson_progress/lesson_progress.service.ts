@@ -1,6 +1,8 @@
 import { ResponseError } from "../../common/errors/response.error.js";
 import * as repository from "./lesson_progress.repository.js";
 import type { CreateLessonProgressData, LessonProgressQuery } from "./lesson_progress.schema.js";
+import { findProgress } from "../courses/courses.repository.js";
+import { findById } from "../lessons/lessons.repository.js";
 
 export async function getLessonProgress(filters: LessonProgressQuery = {}) {
   return repository.findAll(filters);
@@ -14,14 +16,27 @@ export async function getLessonProgressById(id: number) {
 
 export async function createLessonProgress(data: CreateLessonProgressData) {
   const normalized = {
-    ...data,
-    ...normalize(data),
-
-    theory_completed_at: data.theory_completed_at ?? null,
+    id_student: data.id_student,
+    id_lesson: data.id_lesson,
   };
 
   await validate(normalized);
   return write(() => repository.create(normalized));
+}
+
+export async function openLessonTheory(lessonId: number, studentId: string) {
+  const lesson = await findById(lessonId);
+  if (lesson === null) throw new ResponseError(404, "Урок не найден");
+  if (lesson.group === null) throw new ResponseError(404, "Группа урока не найдена");
+  const progressAccess = await findProgress(lesson.group.id_course, studentId);
+  if (!progressAccess?.lessons.some((item) => item.lessonId === lessonId && item.isAvailable)) {
+    throw new ResponseError(403, "Урок пока недоступен");
+  }
+  if (lesson.id_theory === null) throw new ResponseError(400, "У урока нет теории");
+  await repository.markTheoryOpened(studentId, lessonId);
+  const progress = await repository.findByUnique(studentId, lessonId);
+  if (progress === null) throw new ResponseError(500, "Не удалось сохранить прогресс теории");
+  return progress;
 }
 
 // export async function updateLessonProgress(id: number, data: UpdateLessonProgressData) {
@@ -69,19 +84,6 @@ async function write<T>(operation: () => Promise<T>, deleting = false): Promise<
     }
     throw error;
   }
-}
-
-function normalize(data: CreateLessonProgressData): CreateLessonProgressData {
-  const normalized = { ...data };
-  if (data.theory_completed_at != null)
-    normalized.theory_completed_at = normalizeDate(data.theory_completed_at, "theory_completed_at");
-  return normalized;
-}
-
-function normalizeDate(value: string, field: string) {
-  const timestamp = Date.parse(value);
-  if (!Number.isFinite(timestamp)) throw new ResponseError(400, `Некорректная дата ${field}`);
-  return new Date(timestamp).toISOString();
 }
 
 async function validate(data: CreateLessonProgressData, id?: number) {

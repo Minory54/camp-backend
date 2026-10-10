@@ -17,7 +17,6 @@ export async function checkPractice(data: CheckPracticeData) {
   if (!practice) throw new ResponseError(404, "Практика не найдена");
   if (!(await checkRepository.findStudent(data.id_student)))
     throw new ResponseError(404, "Студент не найден");
-
   const practiceFiles = await checkRepository.findPracticeFiles(practice.id);
   const byId = new Map(practiceFiles.map((file) => [file.id, file]));
   const seen = new Set<number>();
@@ -30,7 +29,10 @@ export async function checkPractice(data: CheckPracticeData) {
         throw new ResponseError(404, "Файл практики не найден");
       throw new ResponseError(400, "Файл не принадлежит практике этого урока");
     }
-    if (source.code_language.title !== "html" && source.code_language.title !== "css")
+    if (
+      !source.code_language ||
+      (source.code_language.title !== "html" && source.code_language.title !== "css")
+    )
       throw new ResponseError(400, "Для тренажёра разрешены только HTML и CSS файлы");
   }
   const totalBytes = data.files.reduce((size, file) => size + Buffer.byteLength(file.code), 0);
@@ -43,11 +45,11 @@ export async function checkPractice(data: CheckPracticeData) {
   const savedById = new Map(saved.map((file) => [file.id_practice_file, file.code]));
   for (const file of data.files) savedById.set(file.id_practice_file, file.code);
   const files: CheckFile[] = practiceFiles
-    .filter((file) => file.code_language.title === "html" || file.code_language.title === "css")
+    .filter((file) => file.code_language?.title === "html" || file.code_language?.title === "css")
     .map((file) => ({
       id: file.id,
       filename: file.filename,
-      language: file.code_language.title as "html" | "css",
+      language: file.code_language!.title as "html" | "css",
       code: savedById.get(file.id) ?? file.code,
     }));
   if (!practice.test_js.trim()) throw new ResponseError(500, "Проверка задания не настроена");
