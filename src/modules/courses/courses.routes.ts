@@ -13,7 +13,7 @@ import * as service from "./courses.service.js";
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/",
-    { schema: { tags: ["Course"], summary: "Получение списка курсов", response: { 200: Type.Array(CourseResponseSchema) } } },
+    { schema: { operationId: "getCourses", tags: ["Course"], summary: "Получение списка курсов", response: { 200: Type.Array(CourseResponseSchema) } } },
     async () => service.getCourses(),
   );
 
@@ -21,6 +21,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getCourseById",
         tags: ["Course"],
         summary: "Получение курса по id",
         params: CourseIdSchema,
@@ -35,6 +36,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
+        operationId: "getCourseProgress",
         tags: ["Course"],
         summary: "Получение прогресса студента по курсу",
         params: CourseIdSchema,
@@ -58,6 +60,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createCourse",
         tags: ["Course"],
         summary: "Добавление курса",
         body: CreateCourseSchema,
@@ -74,6 +77,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updateCourse",
         tags: ["Course"],
         summary: "Редактирование курса",
         params: CourseIdSchema,
@@ -86,7 +90,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Course"], summary: "Удаление курса", params: CourseIdSchema } },
+    { schema: { operationId: "deleteCourse", tags: ["Course"], summary: "Удаление курса", params: CourseIdSchema } },
     async (request, reply) => {
       await service.deleteCourse(request.params.id);
       return reply.code(204).send();

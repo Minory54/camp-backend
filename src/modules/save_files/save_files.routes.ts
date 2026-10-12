@@ -34,6 +34,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "getSaveFiles",
         tags: ["Save file"],
         summary: "Получение списка файлов сохранений",
         querystring: SaveFilesFilterSchema,
@@ -47,6 +48,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getSaveFileById",
         tags: ["Save file"],
         summary: "Получение файла сохранения по id",
         params: SaveFileIdSchema,
@@ -60,6 +62,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createSaveFile",
         tags: ["Save file"],
         summary: "Добавление файла сохранения",
         body: CreateSaveFileSchema,
@@ -76,6 +79,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updateSaveFile",
         tags: ["Save file"],
         summary: "Редактирование файла сохранения",
         params: SaveFileIdSchema,
@@ -88,7 +92,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Save file"], summary: "Удаление файла сохранения", params: SaveFileIdSchema } },
+    { schema: { operationId: "deleteSaveFile", tags: ["Save file"], summary: "Удаление файла сохранения", params: SaveFileIdSchema } },
     async (request, reply) => {
       await service.deleteSaveFile(request.params.id);
       return reply.code(204).send();

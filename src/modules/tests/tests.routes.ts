@@ -14,14 +14,14 @@ import * as service from "./tests.service.js";
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/",
-    { schema: { tags: ["Test"], summary: "Получение списка тестов", response: { 200: Type.Array(TestResponseSchema) } } },
+    { schema: { operationId: "getTests", tags: ["Test"], summary: "Получение списка тестов", response: { 200: Type.Array(TestResponseSchema) } } },
     async () => service.getTests(),
   );
 
   fastify.get(
     "/:id",
     {
-      schema: { tags: ["Test"], summary: "Получение теста по id", params: TestIdSchema, response: { 200: TestResponseSchema } },
+      schema: { operationId: "getTestById", tags: ["Test"], summary: "Получение теста по id", params: TestIdSchema, response: { 200: TestResponseSchema } },
     },
     async (request) => service.getTestById(request.params.id),
   );
@@ -31,6 +31,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
+        operationId: "checkAnswer",
         tags: ["Test"],
         summary: "Проверка ответа на вопрос теста",
         body: CheckAnswerSchema,
@@ -48,6 +49,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
+        operationId: "getTestAnswers",
         tags: ["Test"],
         summary: "Получение результатов ответов студента на вопросы теста",
         params: TestIdSchema,
@@ -68,6 +70,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createTest",
         tags: ["Test"],
         summary: "Добавление теста",
         body: CreateTestSchema,
@@ -84,6 +87,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updateTest",
         tags: ["Test"],
         summary: "Редактирование теста",
         params: TestIdSchema,
@@ -96,7 +100,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Test"], summary: "Удаление теста", params: TestIdSchema } },
+    { schema: { operationId: "deleteTest", tags: ["Test"], summary: "Удаление теста", params: TestIdSchema } },
     async (request, reply) => {
       await service.deleteTest(request.params.id);
       return reply.code(204).send();

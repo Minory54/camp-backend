@@ -14,6 +14,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "getPracticeFiles",
         tags: ["Practice file"],
         summary: "Получение списка файлов практических заданий",
         querystring: PracticeFilesFilterSchema,
@@ -27,6 +28,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getPracticeFileById",
         tags: ["Practice file"],
         summary: "Получение файла практического задания по id",
         params: PracticeFileIdSchema,
@@ -40,6 +42,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createPracticeFile",
         tags: ["Practice file"],
         summary: "Добавление файла практического задания",
         body: CreatePracticeFileSchema,
@@ -56,6 +59,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updatePracticeFile",
         tags: ["Practice file"],
         summary: "Редактирование файла практического задания",
         params: PracticeFileIdSchema,
@@ -68,7 +72,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Practice file"], summary: "Удаление файла практического задания", params: PracticeFileIdSchema } },
+    { schema: { operationId: "deletePracticeFile", tags: ["Practice file"], summary: "Удаление файла практического задания", params: PracticeFileIdSchema } },
     async (request, reply) => {
       await service.deletePracticeFile(request.params.id);
       return reply.code(204).send();

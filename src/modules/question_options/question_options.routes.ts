@@ -14,6 +14,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "getQuestionOptions",
         tags: ["Question option"],
         summary: "Получение списка вариантов ответа",
         querystring: QuestionOptionsFilterSchema,
@@ -27,6 +28,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getQuestionOptionById",
         tags: ["Question option"],
         summary: "Получение варианта ответа по id",
         params: QuestionOptionIdSchema,
@@ -40,6 +42,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createQuestionOption",
         tags: ["Question option"],
         summary: "Добавление варианта ответа",
         body: CreateQuestionOptionSchema,
@@ -56,6 +59,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updateQuestionOption",
         tags: ["Question option"],
         summary: "Редактирование варианта ответа",
         params: QuestionOptionIdSchema,
@@ -68,7 +72,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Question option"], summary: "Удаление варианта ответа", params: QuestionOptionIdSchema } },
+    { schema: { operationId: "deleteQuestionOption", tags: ["Question option"], summary: "Удаление варианта ответа", params: QuestionOptionIdSchema } },
     async (request, reply) => {
       await service.deleteQuestionOption(request.params.id);
       return reply.code(204).send();

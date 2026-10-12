@@ -17,6 +17,7 @@ const groupsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "getGroups",
         tags: ["Group"],
         summary: "Получение списка групп",
         querystring: GroupsFilterSchema,
@@ -34,6 +35,7 @@ const groupsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getGroupById",
         tags: ["Group"],
         summary: "Получение группы по id",
         params: GroupIdSchema,
@@ -54,6 +56,7 @@ const groupsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createGroup",
         tags: ["Group"],
         summary: "Добавление группы",
         body: CreateGroupSchema,
@@ -73,6 +76,7 @@ const groupsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updateGroup",
         tags: ["Group"],
         summary: "Редактирование группы",
         params: GroupIdSchema,
@@ -93,6 +97,7 @@ const groupsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "deleteGroup",
         tags: ["Group"],
         summary: "Удаление группы",
         params: GroupIdSchema,

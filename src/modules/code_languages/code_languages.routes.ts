@@ -13,6 +13,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "getCodeLanguages",
         tags: ["Code language"],
         summary: "Получение полного списка языков программирования",
         response: { 200: Type.Array(CodeLanguageResponseSchema) },
@@ -25,6 +26,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getCodeLanguageById",
         tags: ["Code language"],
         summary: "Получение языка программирования по id",
         params: CodeLanguageIdSchema,
@@ -38,6 +40,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createCodeLanguage",
         tags: ["Code language"],
         summary: "Добавление языка программирования",
         body: CreateCodeLanguageSchema,
@@ -54,6 +57,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updateCodeLanguage",
         tags: ["Code language"],
         summary: "Редактирование языка программирования",
         params: CodeLanguageIdSchema,
@@ -66,7 +70,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Code language"],summary: "Удаление языка программирования", params: CodeLanguageIdSchema } },
+    { schema: { operationId: "deleteCodeLanguage", tags: ["Code language"],summary: "Удаление языка программирования", params: CodeLanguageIdSchema } },
     async (request, reply) => {
       await service.deleteCodeLanguage(request.params.id);
       return reply.code(204).send();

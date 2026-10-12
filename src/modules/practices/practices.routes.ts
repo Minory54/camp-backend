@@ -17,6 +17,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     {
       onRequest: requireStudent,
       schema: {
+        operationId: "checkPractice",
         tags: ["Practice"],
         summary: "Проверка решения практического задания",
         body: CheckPracticeSchema,
@@ -30,7 +31,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   );
   fastify.get(
     "/",
-    { schema: { tags: ["Practice"], summary: "Получение списка практических заданий", response: { 200: Type.Array(PracticeResponseSchema) } } },
+    { schema: { operationId: "getPractices", tags: ["Practice"], summary: "Получение списка практических заданий", response: { 200: Type.Array(PracticeResponseSchema) } } },
     async () => service.getPractices(),
   );
 
@@ -38,6 +39,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getPracticeById",
         tags: ["Practice"],
         summary: "Получение практического задания по id",
         params: PracticeIdSchema,
@@ -51,6 +53,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createPractice",
         tags: ["Practice"],
         summary: "Добавление практического задания",
         body: CreatePracticeSchema,
@@ -67,6 +70,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updatePractice",
         tags: ["Practice"],
         summary: "Редактирование практического задания",
         params: PracticeIdSchema,
@@ -79,7 +83,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { tags: ["Practice"], summary: "Удаление практического задания", params: PracticeIdSchema } },
+    { schema: { operationId: "deletePractice", tags: ["Practice"], summary: "Удаление практического задания", params: PracticeIdSchema } },
     async (request, reply) => {
       await service.deletePractice(request.params.id);
       return reply.code(204).send();

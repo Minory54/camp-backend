@@ -27,6 +27,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "getPracticeSaves",
         tags: ["Practice save"],
         summary: "Получение списка сохранений практических заданий",
         querystring: PracticeSavesFilterSchema,
@@ -40,6 +41,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "getPracticeSaveById",
         tags: ["Practice save"],
         summary: "Получение сохранения практического задания по id",
         params: PracticeSaveIdSchema,
@@ -53,6 +55,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/",
     {
       schema: {
+        operationId: "createPracticeSave",
         tags: ["Practice save"],
         summary: "Добавление сохранения практического задания",
         body: CreatePracticeSaveSchema,
@@ -69,6 +72,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "updatePracticeSave",
         tags: ["Practice save"],
         summary: "Редактирование сохранения практического задания",
         params: PracticeSaveIdSchema,
@@ -83,6 +87,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
     "/:id",
     {
       schema: {
+        operationId: "deletePracticeSave",
         tags: ["Practice save"],
         summary: "Удаление сохранения практического задания",
         params: PracticeSaveIdSchema,
