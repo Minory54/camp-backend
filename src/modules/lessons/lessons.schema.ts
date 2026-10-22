@@ -1,4 +1,5 @@
 import { Type, type Static } from "typebox";
+import { LessonProgressResponseSchema } from "../lesson_progress/lesson_progress.schema.js";
 
 export const LessonResponseSchema = Type.Object({
   id: Type.Integer(),
@@ -10,19 +11,43 @@ export const LessonResponseSchema = Type.Object({
   id_practice: Type.Union([Type.Integer({ minimum: 1 }), Type.Null()]),
   id_test: Type.Union([Type.Integer({ minimum: 1 }), Type.Null()]),
   group: Type.Optional(Type.Any()),
-  theory: Type.Optional(Type.Any()),
+  theory: Type.Optional(
+    Type.Union([
+      Type.Object(
+        {
+          id: Type.Integer(),
+          title: Type.String(),
+          description: Type.Union([Type.String(), Type.Null()]),
+          technology: Type.Optional(
+            Type.Union([
+              Type.Object({ title: Type.String() }, { additionalProperties: true }),
+              Type.Null(),
+            ]),
+          ),
+        },
+        { additionalProperties: true },
+      ),
+      Type.Null(),
+    ]),
+  ),
   test: Type.Optional(Type.Any()),
   practice: Type.Optional(Type.Any()),
-  Lesson_progress: Type.Optional(Type.Array(Type.Any())),
+  Lesson_progress: Type.Optional(Type.Array(LessonProgressResponseSchema)),
 });
 
-export const LessonIdSchema = Type.Object({
-  id: Type.Integer({ minimum: 1 }),
-}, { additionalProperties: false });
+export const LessonIdSchema = Type.Object(
+  {
+    id: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+);
 
-export const LessonsFilterSchema = Type.Object({
-  groupId: Type.Optional(Type.Integer({ minimum: 1 })),
-}, { additionalProperties: false });
+export const LessonsFilterSchema = Type.Object(
+  {
+    groupId: Type.Optional(Type.Integer({ minimum: 1 })),
+  },
+  { additionalProperties: false },
+);
 
 export const CreateLessonSchema = Type.Object(
   {

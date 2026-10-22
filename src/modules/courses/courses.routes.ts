@@ -7,13 +7,20 @@ import {
   UpdateCourseSchema,
   CourseProgressResponseSchema,
 } from "./courses.schema.js";
-import { requireStudent, assertStudentOwner } from "../students/students.service.js";
+// import { requireStudent, assertStudentOwner } from "../students/students.service.js";
 import * as service from "./courses.service.js";
 
 const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/",
-    { schema: { operationId: "getCourses", tags: ["Course"], summary: "Получение списка курсов", response: { 200: Type.Array(CourseResponseSchema) } } },
+    {
+      schema: {
+        operationId: "getCourses",
+        tags: ["Course"],
+        summary: "Получение списка курсов",
+        response: { 200: Type.Array(CourseResponseSchema) },
+      },
+    },
     async () => service.getCourses(),
   );
 
@@ -34,14 +41,13 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     "/:id/progress",
     {
-      onRequest: requireStudent,
       schema: {
         operationId: "getCourseProgress",
         tags: ["Course"],
         summary: "Получение прогресса студента по курсу",
         params: CourseIdSchema,
         querystring: Type.Object({
-          studentId: Type.Optional(Type.String({ format: "uuid" })),
+          studentId: Type.String({ format: "uuid" }),
         }),
         response: {
           200: CourseProgressResponseSchema,
@@ -49,10 +55,7 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
       },
     },
     async (request, reply) => {
-      if (request.query.studentId !== undefined)
-        assertStudentOwner(request, request.query.studentId);
-
-      return service.getCourseProgress(request.params.id, request.studentId);
+      return service.getCourseProgress(request.params.id, request.query.studentId);
     },
   );
 
@@ -90,7 +93,14 @@ const routes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.delete(
     "/:id",
-    { schema: { operationId: "deleteCourse", tags: ["Course"], summary: "Удаление курса", params: CourseIdSchema } },
+    {
+      schema: {
+        operationId: "deleteCourse",
+        tags: ["Course"],
+        summary: "Удаление курса",
+        params: CourseIdSchema,
+      },
+    },
     async (request, reply) => {
       await service.deleteCourse(request.params.id);
       return reply.code(204).send();

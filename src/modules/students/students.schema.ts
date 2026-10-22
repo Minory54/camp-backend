@@ -1,4 +1,6 @@
 import { Type, type Static } from "typebox";
+import { LessonProgressResponseSchema } from "../lesson_progress/lesson_progress.schema.js";
+import { PracticeSaveResponseSchema } from "../practice_saves/practice_saves.schema.js";
 
 export const StudentResponseSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
@@ -6,8 +8,8 @@ export const StudentResponseSchema = Type.Object({
   label: Type.Union([Type.String(), Type.Null()]),
   created_at: Type.String({ format: "date-time" }),
   updated_at: Type.String({ format: "date-time" }),
-  Lesson_progress: Type.Optional(Type.Array(Type.Any())),
-  Practice_saves: Type.Optional(Type.Array(Type.Any())),
+  Lesson_progress: Type.Optional(Type.Array(LessonProgressResponseSchema)),
+  Practice_saves: Type.Optional(Type.Array(PracticeSaveResponseSchema)),
 });
 
 export const StudentIdSchema = Type.Object(

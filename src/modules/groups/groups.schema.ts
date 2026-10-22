@@ -1,4 +1,5 @@
 import { Type, Static } from "typebox";
+import { LessonResponseSchema } from "../lessons/lessons.schema.js";
 
 export const GroupStateResponseSchema = Type.Union([
   Type.Literal("open"),
@@ -14,7 +15,7 @@ export const GroupResponseSchema = Type.Object({
   position: Type.Integer(),
   state: GroupStateResponseSchema,
   course: Type.Optional(Type.Any()),
-  Lessons: Type.Optional(Type.Array(Type.Any())),
+  Lessons: Type.Optional(Type.Array(LessonResponseSchema)),
 });
 
 // СХЕМА ДЛЯ ПАРАМЕТРА ID

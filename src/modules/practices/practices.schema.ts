@@ -1,4 +1,6 @@
 import { Type, type Static } from "typebox";
+import { PracticeSaveResponseSchema } from "../practice_saves/practice_saves.schema.js";
+import { PracticeFileResponseSchema } from "../practice_files/practice_files.schema.js";
 
 export const PracticeResponseSchema = Type.Object({
   id: Type.Integer(),
@@ -7,8 +9,8 @@ export const PracticeResponseSchema = Type.Object({
   mdx_source: Type.String({ minLength: 1, pattern: "\\S" }),
   //test_js: Type.String({ minLength: 1, pattern: "\\S" }),
   Lessons: Type.Optional(Type.Array(Type.Any())),
-  Practice_saves: Type.Optional(Type.Array(Type.Any())),
-  Practice_files: Type.Optional(Type.Array(Type.Any())),
+  Practice_saves: Type.Optional(Type.Array(PracticeSaveResponseSchema)),
+  Practice_files: Type.Optional(Type.Array(PracticeFileResponseSchema)),
 });
 
 export const PracticeIdSchema = Type.Object({

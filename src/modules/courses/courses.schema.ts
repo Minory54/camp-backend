@@ -1,4 +1,5 @@
 import { Type, type Static } from "typebox";
+import { GroupResponseSchema } from "../groups/groups.schema.js";
 
 const nullableDate = Type.Union([Type.String({ format: "date-time" }), Type.Null()]);
 
@@ -20,7 +21,7 @@ export const CourseResponseSchema = Type.Object({
   id: Type.Integer(),
   title: Type.String({ minLength: 1, maxLength: 255, pattern: "\\S" }),
   description: Type.Union([Type.String(), Type.Null()]),
-  Groups: Type.Optional(Type.Array(Type.Any())),
+  Groups: Type.Optional(Type.Array(GroupResponseSchema)),
 });
 
 export const CourseIdSchema = Type.Object(
