@@ -12,6 +12,7 @@
     "contract:emit": "node --import tsx scripts/emit-contract.ts",
     "postinstall": "prisma skills sync || exit 0",
     "seed:base": "tsx src/prisma/seeds/seed.base.ts",
+    "seed:general": "tsx src/prisma/seeds/seed.general.ts",
     "seed:test": "tsx src/prisma/seeds/seed.test.ts"
   },
   "author": "",

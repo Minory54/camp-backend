@@ -696,195 +696,6 @@ export type StorageColumnInputTypes = {
     };
   };
 };
-
-export namespace Models {
-  export type public_Code_languages = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    Practice_files: public_Practice_files[];
-    Test_questions: public_Test_questions[];
-    readonly [RelationKeys]?: 'Practice_files' | 'Test_questions';
-  };
-  export type public_Courses = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    description: CodecTypes['pg/text@1']['output'] | null;
-    Groups: public_Groups[];
-    readonly [RelationKeys]?: 'Groups';
-  };
-  export type public_Students = {
-    id: CodecTypes['pg/uuid@1']['output'];
-    display_code: CodecTypes['pg/text@1']['output'];
-    recovery_code: CodecTypes['pg/text@1']['output'];
-    label: CodecTypes['pg/text@1']['output'] | null;
-    access_token: CodecTypes['pg/text@1']['output'];
-    created_at: CodecTypes['pg/timestamptz-string@1']['output'];
-    updated_at: CodecTypes['pg/timestamptz-string@1']['output'];
-    Lesson_progress: public_Lesson_progress[];
-    Practice_saves: public_Practice_saves[];
-    Test_answers: public_Test_answers[];
-    readonly [RelationKeys]?: 'Lesson_progress' | 'Practice_saves' | 'Test_answers';
-  };
-  export type public_Technologies = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    Theories: public_Theories[];
-    readonly [RelationKeys]?: 'Theories';
-  };
-  export type public_Groups = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    position: CodecTypes['pg/int4@1']['output'];
-    state: 'open' | 'locked' | 'hidden';
-    id_course: CodecTypes['pg/int4@1']['output'];
-    Lessons: public_Lessons[];
-    course: public_Courses;
-    readonly [RelationKeys]?: 'Lessons' | 'course';
-  };
-  export type public_Lessons = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_group: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    position: CodecTypes['pg/int4@1']['output'];
-    is_hidden: CodecTypes['pg/bool@1']['output'];
-    id_theory: CodecTypes['pg/int4@1']['output'] | null;
-    id_practice: CodecTypes['pg/int4@1']['output'] | null;
-    id_test: CodecTypes['pg/int4@1']['output'] | null;
-    Lesson_progress: public_Lesson_progress[];
-    group: public_Groups;
-    practice: public_Practices | null;
-    test: public_Tests | null;
-    theory: public_Theories | null;
-    readonly [RelationKeys]?: 'Lesson_progress' | 'group' | 'practice' | 'test' | 'theory';
-  };
-  export type public_Theories = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    description: CodecTypes['pg/text@1']['output'] | null;
-    id_technology: CodecTypes['pg/int4@1']['output'];
-    position: CodecTypes['pg/int4@1']['output'];
-    mdx_source: CodecTypes['pg/text@1']['output'];
-    Lessons: public_Lessons[];
-    technology: public_Technologies;
-    readonly [RelationKeys]?: 'Lessons' | 'technology';
-  };
-  export type public_Tests = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    description: CodecTypes['pg/text@1']['output'] | null;
-    Lessons: public_Lessons[];
-    Test_questions: public_Test_questions[];
-    readonly [RelationKeys]?: 'Lessons' | 'Test_questions';
-  };
-  export type public_Test_questions = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_test: CodecTypes['pg/int4@1']['output'];
-    position: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    description: CodecTypes['pg/text@1']['output'] | null;
-    type: 'single' | 'multiple';
-    code_block: CodecTypes['pg/text@1']['output'] | null;
-    id_code_language: CodecTypes['pg/int4@1']['output'] | null;
-    Question_options: public_Question_options[];
-    Test_answers: public_Test_answers[];
-    code_language: public_Code_languages | null;
-    test: public_Tests;
-    readonly [RelationKeys]?: 'Question_options' | 'Test_answers' | 'code_language' | 'test';
-  };
-  export type public_Question_options = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_question: CodecTypes['pg/int4@1']['output'];
-    position: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    is_correct: CodecTypes['pg/bool@1']['output'];
-    question: public_Test_questions;
-    readonly [RelationKeys]?: 'question';
-  };
-  export type public_Test_answers = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_student: CodecTypes['pg/uuid@1']['output'];
-    id_question: CodecTypes['pg/int4@1']['output'];
-    is_correct: CodecTypes['pg/bool@1']['output'];
-    question: public_Test_questions;
-    student: public_Students;
-    readonly [RelationKeys]?: 'question' | 'student';
-  };
-  export type public_Lesson_progress = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_student: CodecTypes['pg/uuid@1']['output'];
-    id_lesson: CodecTypes['pg/int4@1']['output'];
-    theory_completed_at: CodecTypes['pg/timestamptz-string@1']['output'] | null;
-    practice_completed_at: CodecTypes['pg/timestamptz-string@1']['output'] | null;
-    test_completed_at: CodecTypes['pg/timestamptz-string@1']['output'] | null;
-    lesson: public_Lessons;
-    student: public_Students;
-    readonly [RelationKeys]?: 'lesson' | 'student';
-  };
-  export type public_Practices = {
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    description: CodecTypes['pg/text@1']['output'] | null;
-    mdx_source: CodecTypes['pg/text@1']['output'];
-    test_js: CodecTypes['pg/text@1']['output'];
-    Lessons: public_Lessons[];
-    Practice_files: public_Practice_files[];
-    Practice_saves: public_Practice_saves[];
-    readonly [RelationKeys]?: 'Lessons' | 'Practice_files' | 'Practice_saves';
-  };
-  export type public_Practice_saves = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_student: CodecTypes['pg/uuid@1']['output'];
-    id_practice: CodecTypes['pg/int4@1']['output'];
-    created_at: CodecTypes['pg/timestamptz-string@1']['output'];
-    updated_at: CodecTypes['pg/timestamptz-string@1']['output'];
-    Save_files: public_Save_files[];
-    practice: public_Practices;
-    student: public_Students;
-    readonly [RelationKeys]?: 'Save_files' | 'practice' | 'student';
-  };
-  export type public_Practice_files = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_practice: CodecTypes['pg/int4@1']['output'];
-    id_code_language: CodecTypes['pg/int4@1']['output'];
-    code: CodecTypes['pg/text@1']['output'];
-    filename: CodecTypes['pg/text@1']['output'];
-    Save_files: public_Save_files[];
-    code_language: public_Code_languages;
-    practice: public_Practices;
-    readonly [RelationKeys]?: 'Save_files' | 'code_language' | 'practice';
-  };
-  export type public_Save_files = {
-    id: CodecTypes['pg/int4@1']['output'];
-    id_practice_save: CodecTypes['pg/int4@1']['output'];
-    id_practice_file: CodecTypes['pg/int4@1']['output'];
-    code: CodecTypes['pg/text@1']['output'];
-    practice_file: public_Practice_files;
-    practice_save: public_Practice_saves;
-    readonly [RelationKeys]?: 'practice_file' | 'practice_save';
-  };
-}
-
-export declare const models: {
-  public: {
-    Code_languages: Models.public_Code_languages;
-    Courses: Models.public_Courses;
-    Students: Models.public_Students;
-    Technologies: Models.public_Technologies;
-    Groups: Models.public_Groups;
-    Lessons: Models.public_Lessons;
-    Theories: Models.public_Theories;
-    Tests: Models.public_Tests;
-    Test_questions: Models.public_Test_questions;
-    Question_options: Models.public_Question_options;
-    Test_answers: Models.public_Test_answers;
-    Lesson_progress: Models.public_Lesson_progress;
-    Practices: Models.public_Practices;
-    Practice_saves: Models.public_Practice_saves;
-    Practice_files: Models.public_Practice_files;
-    Save_files: Models.public_Save_files;
-  };
-};
-
 export type TypeMaps = TypeMapsType<
   CodecTypes,
   QueryOperationTypes,
@@ -2110,7 +1921,6 @@ type ContractBase = Omit<
                   readonly model: 'Courses';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_course'];
                   readonly targetFields: readonly ['id'];
@@ -2172,7 +1982,6 @@ type ContractBase = Omit<
                   readonly model: 'Lessons';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_lesson'];
                   readonly targetFields: readonly ['id'];
@@ -2184,7 +1993,6 @@ type ContractBase = Omit<
                   readonly model: 'Students';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_student'];
                   readonly targetFields: readonly ['id'];
@@ -2257,7 +2065,6 @@ type ContractBase = Omit<
                   readonly model: 'Groups';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_group'];
                   readonly targetFields: readonly ['id'];
@@ -2269,7 +2076,6 @@ type ContractBase = Omit<
                   readonly model: 'Practices';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: true;
                 readonly on: {
                   readonly localFields: readonly ['id_practice'];
                   readonly targetFields: readonly ['id'];
@@ -2281,7 +2087,6 @@ type ContractBase = Omit<
                   readonly model: 'Tests';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: true;
                 readonly on: {
                   readonly localFields: readonly ['id_test'];
                   readonly targetFields: readonly ['id'];
@@ -2293,7 +2098,6 @@ type ContractBase = Omit<
                   readonly model: 'Theories';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: true;
                 readonly on: {
                   readonly localFields: readonly ['id_theory'];
                   readonly targetFields: readonly ['id'];
@@ -2356,7 +2160,6 @@ type ContractBase = Omit<
                   readonly model: 'Code_languages';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_code_language'];
                   readonly targetFields: readonly ['id'];
@@ -2368,7 +2171,6 @@ type ContractBase = Omit<
                   readonly model: 'Practices';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_practice'];
                   readonly targetFields: readonly ['id'];
@@ -2434,7 +2236,6 @@ type ContractBase = Omit<
                   readonly model: 'Practices';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_practice'];
                   readonly targetFields: readonly ['id'];
@@ -2446,7 +2247,6 @@ type ContractBase = Omit<
                   readonly model: 'Students';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_student'];
                   readonly targetFields: readonly ['id'];
@@ -2565,7 +2365,6 @@ type ContractBase = Omit<
                   readonly model: 'Test_questions';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_question'];
                   readonly targetFields: readonly ['id'];
@@ -2610,7 +2409,6 @@ type ContractBase = Omit<
                   readonly model: 'Practice_files';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_practice_file'];
                   readonly targetFields: readonly ['id'];
@@ -2622,7 +2420,6 @@ type ContractBase = Omit<
                   readonly model: 'Practice_saves';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_practice_save'];
                   readonly targetFields: readonly ['id'];
@@ -2785,7 +2582,6 @@ type ContractBase = Omit<
                   readonly model: 'Test_questions';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_question'];
                   readonly targetFields: readonly ['id'];
@@ -2797,7 +2593,6 @@ type ContractBase = Omit<
                   readonly model: 'Students';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_student'];
                   readonly targetFields: readonly ['id'];
@@ -2879,7 +2674,6 @@ type ContractBase = Omit<
                   readonly model: 'Code_languages';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: true;
                 readonly on: {
                   readonly localFields: readonly ['id_code_language'];
                   readonly targetFields: readonly ['id'];
@@ -2891,7 +2685,6 @@ type ContractBase = Omit<
                   readonly model: 'Tests';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_test'];
                   readonly targetFields: readonly ['id'];
@@ -3007,7 +2800,6 @@ type ContractBase = Omit<
                   readonly model: 'Technologies';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['id_technology'];
                   readonly targetFields: readonly ['id'];
